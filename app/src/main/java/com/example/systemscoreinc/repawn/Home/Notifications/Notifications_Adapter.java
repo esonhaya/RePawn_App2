@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +21,7 @@ import com.example.systemscoreinc.repawn.Profile_Related.RePawner_Profile;
 import com.example.systemscoreinc.repawn.R;
 import com.example.systemscoreinc.repawn.Session;
 import com.squareup.picasso.Picasso;
+import com.valdesekamdem.library.mdtoast.MDToast;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -35,7 +37,6 @@ public class Notifications_Adapter extends RecyclerView.Adapter<Notifications_Vi
     private Context Ctx;
     IpConfig ip = new IpConfig();
     String url = ip.getUrl() + "database.php";
-    private ArrayList<Notifications_List> arraylist;
     Intent to_page;
     Session session;
     RequestQueue rq;
@@ -43,8 +44,6 @@ public class Notifications_Adapter extends RecyclerView.Adapter<Notifications_Vi
     public Notifications_Adapter(Context context, List<Notifications_List> myDataset) {
         mDataset = myDataset;
         Ctx = context;
-        this.arraylist = new ArrayList<>();
-        this.arraylist.addAll(mDataset);
         session = new Session(context);
         rq = Volley.newRequestQueue(Ctx);
     }
@@ -94,24 +93,25 @@ public class Notifications_Adapter extends RecyclerView.Adapter<Notifications_Vi
             }
             check_notification(nlist.getNotif_id());
 
-            Ctx.startActivity(to_page);
+             Ctx.startActivity(to_page);
         });
     }
 
     public void check_notification(int notif_id) {
-        StringRequest rq = new StringRequest(Request.Method.POST, url, response -> {
+        Log.e("notif_id", String.valueOf(notif_id));
+        StringRequest req = new StringRequest(Request.Method.POST, url, response ->{
+
         },
                 error -> {
                 }) {
-            @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<>();
                 params.put("nid", String.valueOf(notif_id));
                 params.put("check_notif", "1");
-                return super.getParams();
+                return params;
             }
         };
-
+        rq.add(req);
     }
 
     public String date_ago(String adate) throws ParseException {

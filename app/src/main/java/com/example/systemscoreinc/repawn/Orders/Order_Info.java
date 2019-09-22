@@ -57,7 +57,7 @@ public class Order_Info extends AppCompatActivity {
     Session session;
     RequestQueue rq;
     ImageView product_image;
-    Button buyer_confirm, change_payment, cancel_request, pay_pal;
+    Button buyer_confirm, change_payment, cancel_request, pay_pal, order_now;
     int rid;
     Order_Adapter oa;
     List<Order_List> ol;
@@ -153,6 +153,8 @@ public class Order_Info extends AppCompatActivity {
         cancel_request = this.findViewById(R.id.cancel_request);
         pay_pal = this.findViewById(R.id.pay_pal);
         pay_pal.setOnClickListener(view -> pay_now());
+        order_now = this.findViewById(R.id.order_now);
+       // order_now.setOnClickListener(view->);
         buyer_confirm.setOnClickListener(view -> confirm_buyer());
         change_payment.setOnClickListener(view -> change_payment());
         cancel_request.setOnClickListener(view -> {
@@ -264,10 +266,10 @@ public class Order_Info extends AppCompatActivity {
         } else {
             spayment_type = "manual";
         }
-        StringRequest request = new StringRequest(Request.Method.POST, url, response ->{
-                MDToast.makeText(context, response, MDToast.LENGTH_LONG, MDToast.TYPE_SUCCESS).show();
-                restart();
-                }, error -> {
+        StringRequest request = new StringRequest(Request.Method.POST, url, response -> {
+            MDToast.makeText(context, response, MDToast.LENGTH_LONG, MDToast.TYPE_SUCCESS).show();
+            restart();
+        }, error -> {
 
         }) {
             @Override
@@ -281,15 +283,18 @@ public class Order_Info extends AppCompatActivity {
         };
         rq.add(request);
     }
- private void restart(){  Intent intent = getIntent();
-     intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-     finish();
-     overridePendingTransition(0, 0);
 
-     startActivity(intent);
-     overridePendingTransition(0, 0);
+    private void restart() {
+        Intent intent = getIntent();
+        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+        finish();
+        overridePendingTransition(0, 0);
 
- }
+        startActivity(intent);
+        overridePendingTransition(0, 0);
+
+    }
+
     public void confirm_buyer() {
         StringRequest request = new StringRequest(Request.Method.POST, url, response ->
                 MDToast.makeText(context, response, MDToast.LENGTH_LONG, MDToast.TYPE_SUCCESS).show(), error -> {

@@ -20,6 +20,7 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.systemscoreinc.repawn.Home.Home_Navigation1;
 import com.example.systemscoreinc.repawn.Home.RePawners.RePawnerList;
 import com.example.systemscoreinc.repawn.IpConfig;
 import com.example.systemscoreinc.repawn.R;
@@ -39,8 +40,8 @@ public class Notifications extends AppCompatActivity {
     private Toolbar toolbar;
     private TabLayout tabLayout;
     private ViewPager viewPager;
-    List<Notifications_List> new_list;
-    List<Notifications_List> old_list;
+    List<Notifications_List> new_list = new ArrayList<>();
+    List<Notifications_List> old_list = new ArrayList<>();
     Notifications_Adapter nadpt;
     Notifications_Adapter oadpt;
     Context context;
@@ -71,6 +72,7 @@ public class Notifications extends AppCompatActivity {
         tabLayout.setupWithViewPager(viewPager);
         toolbar.setNavigationOnClickListener(v -> {
             finish();
+            startActivity(new Intent(Notifications.this, Home_Navigation1.class));
         });
         context = this;
         extra = getIntent().getExtras();
@@ -88,6 +90,7 @@ public class Notifications extends AppCompatActivity {
     }
 
     public void getOld_Notif(View rootView) {
+
         oadpt = new Notifications_Adapter(context, old_list);
         checked_view = rootView.findViewById(R.id.notif_view);
         checked_view.setHasFixedSize(true);
@@ -127,7 +130,7 @@ public class Notifications extends AppCompatActivity {
     private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
         adapter.addFragment(new New_Notifications(), "NEW");
-        //   adapter.addFragment(new Checked_Notifications(), "CHECKED");
+        adapter.addFragment(new Checked_Notifications(), "CHECKED");
         viewPager.setAdapter(adapter);
     }
 

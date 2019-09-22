@@ -1,6 +1,8 @@
 package com.example.systemscoreinc.repawn.Home.Notifications;
 
-public class Notifications_List {
+import java.io.Serializable;
+
+public class Notifications_List implements Serializable {
     int notif_id, link_id, type, checked;
     String date_posted, notif_image, message;
 

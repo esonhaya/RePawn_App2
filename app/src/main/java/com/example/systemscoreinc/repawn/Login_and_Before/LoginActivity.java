@@ -101,7 +101,7 @@ public class LoginActivity extends AppCompatActivity {
                 spass = String.valueOf(pass.getText());
                 StringRequest request = new StringRequest(Request.Method.POST, url, response -> {
                     if (!response.equals("0")) {
-                        user_id = Integer.valueOf(response);
+                        user_id = Integer.valueOf(response.trim());
                         //   loginSuccess(user_id, semail, 1);
                         check_active();
                     } else {

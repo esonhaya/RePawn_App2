@@ -62,12 +62,13 @@ public class RePawner_Profile extends AppCompatActivity {
     TextInputLayout feedi;
     Button btn_submit, btn_cancel, btn_follow, btn_unfollow, btn_delete;
     IpConfig ip = new IpConfig();
-    String url = ip.getUrl()+"seller_page.php", mname, user_image, fname, lname, contact, email, bdate, rep_image, followed_id;
+    String url = ip.getUrl() + "seller_page.php", mname, user_image, fname, lname, contact, email, bdate, rep_image, followed_id;
     RatingBar review_bar;
     Bundle extra;
     Session session;
     Context context;
-    int user_id, rating, update_feedback, if_follow;
+    int user_id, rating, update_feedback;
+    String if_follow;
     RequestQueue rq;
     Home_Items_Adapter items_adapter;
     Feedback_Ratings_Adapter fratings_adapter;
@@ -77,6 +78,8 @@ public class RePawner_Profile extends AppCompatActivity {
     List<ItemList> itemlist = new ArrayList<>();
     List<Follower_List> follow_list = new ArrayList<>();
     List<Follower_List> follow_list_min = new ArrayList<>();
+    String feedback = "";
+    int feedback_present;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,12 +96,9 @@ public class RePawner_Profile extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle("RePawner Profile");
 
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // perform whatever you want on back arrow click
-                finish();
-            }
+        toolbar.setNavigationOnClickListener(v -> {
+            // perform whatever you want on back arrow click
+            finish();
         });
 
 
@@ -362,7 +362,7 @@ public class RePawner_Profile extends AppCompatActivity {
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<>();
                 params.put("feedback_ratings", String.valueOf(user_id));
-                params.put("pid", String.valueOf(user_id));
+                params.put("user_id", String.valueOf(user_id));
                 params.put("rid", String.valueOf(session.getID()));
 
                 return params;
@@ -376,9 +376,9 @@ public class RePawner_Profile extends AppCompatActivity {
         if (item.getItemId() == android.R.id.home) {
 
         }
-        if(item.getItemId()==R.id.subscribe_prof){
-            Intent to_subscribe=new Intent(RePawner_Profile.this,Subscription_Info.class);
-            to_subscribe.putExtra("user_id",user_id);
+        if (item.getItemId() == R.id.subscribe_prof) {
+            Intent to_subscribe = new Intent(RePawner_Profile.this, Subscription_Info.class);
+            to_subscribe.putExtra("user_id", user_id);
             startActivity(to_subscribe);
         }
         if (item.getItemId() == R.id.edit_prof) {
@@ -444,7 +444,8 @@ public class RePawner_Profile extends AppCompatActivity {
                     btn_submit.setVisibility(View.VISIBLE);
                     btn_delete.setVisibility(View.VISIBLE);
                     feede.setText(feedback_content.getText());
-                    if (feedback_content.getText() != "") {
+                    Log.e("feedback", feedback);
+                    if (update_feedback==1) {
                         btn_delete.setVisibility(View.VISIBLE);
                     }
                     break;
@@ -542,7 +543,8 @@ public class RePawner_Profile extends AppCompatActivity {
                     update_feedback = 1;
                     JSONObject feedback_object = rep_feedback_array.getJSONObject(0);
                     review_bar.setRating(feedback_object.getLong("Rating"));
-                    feedback_content.setText(feedback_object.getString("Feedback"));
+                    feedback = feedback_object.getString("Feedback");
+                    feedback_content.setText(feedback);
                     feedback_content.setTextColor(getResources().getColor(R.color.colorDGray));
                 }
 
@@ -567,9 +569,9 @@ public class RePawner_Profile extends AppCompatActivity {
 
     private void check_if_following() {
         StringRequest follow_status = new StringRequest(Request.Method.POST, url, response -> {
-            if_follow = Integer.valueOf(response);
+            if_follow = response;
             Log.e("follow", String.valueOf(if_follow));
-            if (if_follow == 1) {
+            if (if_follow.equals("1")) {
                 btn_follow.setVisibility(View.GONE);
                 btn_unfollow.setVisibility(View.VISIBLE);
             }

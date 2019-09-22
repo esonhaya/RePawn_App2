@@ -46,6 +46,9 @@
         <activity android:name=".Pawnshop.Pawnshop_Page" />
         <activity android:name=".Items.Promotion_History.Promotion_History" />
         <activity android:name=".Items.MyPawnedInfo" />
+        <activity android:name=".Home.Notifications.Notifications">
+
+        </activity>
         <activity
             android:name=".Items.ConfirmationActivity"
             android:theme="@style/AppTheme..NoActionBar" />

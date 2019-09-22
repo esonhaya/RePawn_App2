@@ -296,7 +296,11 @@
 
             </LinearLayout>
 
-
+            <Button android:id="@+id/order_now"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Order Now"
+                    android:visibility="gone"/>
             <Button
                 android:id="@+id/change_payment"
                 android:layout_width="match_parent"

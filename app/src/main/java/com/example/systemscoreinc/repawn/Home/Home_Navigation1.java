@@ -171,12 +171,9 @@ public class Home_Navigation1 extends AppCompatActivity implements BaseSliderVie
                             startActivity(to_prof);
                             break;
                         case R.id.nav_notif:
-//                            Intent to_notif = new Intent(Home_Navigation1.this, Notifications.class);
-//                            to_notif.putExtra("user_id", session.getID());
-//                            startActivity(to_notif)
-                            Intent to_notif=new Intent(Home_Navigation1.this, Notifications.class);
-                            to_notif.putExtra("new_notifs", (ArrayList<Notifications_List>)new_notif);
-                            notification_sample();
+                            Intent to_notif = new Intent(Home_Navigation1.this, Notifications.class);
+                            to_notif.putExtra("new_notifs", (ArrayList<Notifications_List>) new_notif);
+                            startActivity(to_notif);
                             break;
                         case R.id.nav_items:
                             startActivity(new Intent(Home_Navigation1.this, Pawned.class));
@@ -291,33 +288,10 @@ public class Home_Navigation1 extends AppCompatActivity implements BaseSliderVie
                         | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 pendingIntent = PendingIntent.getActivity(this, notif_id, notifyIntent, 0);
             }
-
-            Picasso.get()
-                    .load(url)
-                    .into(new Target() {
-                        @Override
-                        public void onBitmapLoaded(final Bitmap bitmap, Picasso.LoadedFrom from) {
-                            /* Save the bitmap or do something with it here */
-
-                            //Set it in the ImageView
-                            largeIcon = bitmap;
-                        }
-
-                        @Override
-                        public void onBitmapFailed(Exception e, Drawable errorDrawable) {
-
-                        }
-
-                        @Override
-                        public void onPrepareLoad(Drawable placeHolderDrawable) {
-
-                        }
-                    });
             Notification n = new Notification.Builder(this)
                     .setContentTitle("RePawn")
                     .setContentText(cur.getMessage())
                     .setSmallIcon(R.mipmap.rp_launcher_round)
-                    .setLargeIcon(largeIcon)
                     .setContentIntent(pendingIntent).build();
 
 
