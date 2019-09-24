@@ -6,9 +6,15 @@ public class Feedback_Ratings_List {
     private String review_content;
     private String review_bar;
     private String review_image;
+    int user_id;
 
-    public Feedback_Ratings_List(String review_name, String review_date, String review_content, String review_bar,
+    public int getUser_id() {
+        return user_id;
+    }
+
+    public Feedback_Ratings_List(int user_id, String review_name, String review_date, String review_content, String review_bar,
                                  String review_image) {
+        this.user_id = user_id;
         this.review_name = review_name;
         this.review_date = review_date;
         this.review_content = review_content;

@@ -19,6 +19,8 @@ import com.example.systemscoreinc.repawn.Items.Pawned;
 import com.example.systemscoreinc.repawn.Profile_Related.RePawner_Profile;
 import com.example.systemscoreinc.repawn.R;
 import com.example.systemscoreinc.repawn.Session;
+import com.squareup.picasso.MemoryPolicy;
+import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 import com.valdesekamdem.library.mdtoast.MDToast;
 
@@ -68,7 +70,10 @@ public class Pending_Request_Adapter extends RecyclerView.Adapter<Pending_Reques
         type = list.getRequest_type();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
         Picasso.get()
+
                 .load(ip.getUrl_image() + list.getUser_image())
+                .memoryPolicy(MemoryPolicy.NO_CACHE)
+                .networkPolicy(NetworkPolicy.NO_CACHE)
                 .fit()
                 .into(holder.request_image);
         Date date = null;
@@ -82,20 +87,20 @@ public class Pending_Request_Adapter extends RecyclerView.Adapter<Pending_Reques
 
         holder.request_name.setText(list.getUser_name());
         holder.request_date.setText(sdate);
-        if (list.getRequest_type().equals("order")) {
-            pay_type = list.getPayment_type();
-            holder.payment_type.setText(pay_type);
-            if (pay_type.equals("manual")) {
-                holder.payment_type.setTextColor(ContextCompat.getColor(Ctx, R.color.colorDGray));
-            } else {
-                holder.payment_type.setTextColor(Color.BLUE);
-            }
+        pay_type = list.getPayment_type();
+        holder.payment_type.setText(pay_type);
+        if (pay_type.equals("manual")) {
+            holder.payment_type.setTextColor(ContextCompat.getColor(Ctx, R.color.colorDGray));
+        } else {
+            holder.payment_type.setTextColor(Color.BLUE);
         }
+
         holder.linearLayout.setOnLongClickListener(v -> {
             AlertDialog onconf = new AlertDialog.Builder(Ctx, R.style.RePawnDialog)
                     .setTitle("Accept this Request")
-                    .setPositiveButton("YES", (dialog, which) -> request_decision(1, list.getRequest_type()))
-                    .setNegativeButton("NO", (dialog, which) -> request_decision(0, list.getRequest_type()))
+                    .setPositiveButton("Accept", (dialog, which) -> request_decision(1, list.getRequest_type()))
+                    .setNegativeButton("Decline", (dialog, which) -> request_decision(0, list.getRequest_type()))
+                    .setNeutralButton("Decide later",((dialog,which) -> {}))
                     .create();
             onconf.show();
             return true;

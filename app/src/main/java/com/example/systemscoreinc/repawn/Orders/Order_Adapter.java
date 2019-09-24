@@ -12,8 +12,13 @@ import android.view.ViewGroup;
 
 import com.example.systemscoreinc.repawn.IpConfig;
 import com.example.systemscoreinc.repawn.R;
+import com.squareup.picasso.MemoryPolicy;
+import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 public class Order_Adapter extends RecyclerView.Adapter<Order_ViewHolder> {
@@ -33,7 +38,7 @@ public class Order_Adapter extends RecyclerView.Adapter<Order_ViewHolder> {
     public Order_ViewHolder onCreateViewHolder(ViewGroup parent,
                                                int viewType) {
         // create a new view
-        View layoutView = LayoutInflater.from(Ctx).inflate(R.layout.order_card, parent, false);
+        View layoutView = LayoutInflater.from(Ctx).inflate(R.layout.my_order_card, parent, false);
         return new Order_ViewHolder(layoutView);
     }
 
@@ -44,30 +49,39 @@ public class Order_Adapter extends RecyclerView.Adapter<Order_ViewHolder> {
         holder.product_name.setText(item.getProduct_name());
         Picasso.get()
                 .load(ip.getUrl_image() + item.getImage_url())
+                .memoryPolicy(MemoryPolicy.NO_CACHE)
+                .networkPolicy(NetworkPolicy.NO_CACHE)
                 .fit()
                 .into(holder.product_image);
-        String status = item.getStatus();
-        if (status.equals("accepted")) {
-            holder.request_status.setTextColor(ContextCompat.getColor(Ctx, R.color.colorPrimaryDark));
-        } else if (status.equals("declined")) {
-            holder.item_ribbon.setBackgroundColor(Color.RED);
+        String rtype = item.getRequest_type();
+        if (rtype.equals("order")) {
+            holder.item_ribbon.setBackgroundColor(ContextCompat.getColor(Ctx, R.color.colorPrimaryDark));
+        } else {
+            holder.item_ribbon.setBackgroundColor(Color.BLUE);
         }
-        String rtype=item.getRequest_type();
-            if(rtype.equals("order")) {
-                holder.item_ribbon.setBackgroundColor(ContextCompat.getColor(Ctx, R.color.colorPrimaryDark));
-            } else {
-                holder.item_ribbon.setBackgroundColor(Color.BLUE);
-            }
-        holder.linearLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent pinfo = new Intent(Ctx, Order_Info.class);
-                pinfo.putExtra("product_id", item.getProduct_id());
-                pinfo.putExtra("request_type", item.getRequest_type());
-                pinfo.putExtra("request_status", item.getStatus());
-                Ctx.startActivity(pinfo);
+        holder.request_price.setText("₱ " + String.format("%.2f", Double.valueOf(item.getProduct_price())));
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 
-            }
+        Date date = null;
+        try {
+            date = simpleDateFormat.parse(item.getDate_sent());
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        SimpleDateFormat convetDateFormat = new SimpleDateFormat("MM/dd/yyyy ");
+        String sdate = convetDateFormat.format(date);
+        holder.date_sent.setText(sdate);
+        holder.request_status.setText(item.getStatus());
+        holder.linearLayout.setOnClickListener(view -> {
+            Intent pinfo = new Intent(Ctx, Order_Info.class);
+            pinfo.putExtra("product_id", item.getProduct_id());
+            pinfo.putExtra("request_id", item.getOrder_id());
+            pinfo.putExtra("request_type", item.getRequest_type());
+            pinfo.putExtra("request_status", item.getStatus());
+            pinfo.putExtra("payment_type", item.getPayment_type());
+            pinfo.putExtra("type", item.getProduct_type());
+            Ctx.startActivity(pinfo);
+
         });
     }
 

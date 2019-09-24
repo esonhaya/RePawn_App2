@@ -10,6 +10,8 @@ import android.view.ViewGroup;
 import com.example.systemscoreinc.repawn.IpConfig;
 import com.example.systemscoreinc.repawn.Profile_Related.RePawner_Profile;
 import com.example.systemscoreinc.repawn.R;
+import com.squareup.picasso.MemoryPolicy;
+import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
 import java.text.ParseException;
@@ -56,6 +58,8 @@ public class Follower_Adapter extends RecyclerView.Adapter<Follower_ViewHolder> 
         holder.follow_date.setText(sdate);
         Picasso.get()
                 .load(ip.getUrl_image() +list.getUser_image())
+                .memoryPolicy(MemoryPolicy.NO_CACHE)
+                .networkPolicy(NetworkPolicy.NO_CACHE)
                 .fit()
                 .into(holder.follow_image);
         holder.card_layout.setOnClickListener(new View.OnClickListener() {

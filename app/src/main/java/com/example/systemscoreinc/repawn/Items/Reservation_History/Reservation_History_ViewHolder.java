@@ -11,7 +11,7 @@ import com.example.systemscoreinc.repawn.R;
 public class Reservation_History_ViewHolder extends RecyclerView.ViewHolder {
 
     //  public ImageView pawnImage;
-    public TextView orderer_name, date_sent, date_accepted, date_ended;
+    public TextView orderer_name, date_sent, date_accepted, date_ended, payment_type;
     public LinearLayout linearLayout;
 
     public Reservation_History_ViewHolder(@NonNull View itemView) {
@@ -20,6 +20,7 @@ public class Reservation_History_ViewHolder extends RecyclerView.ViewHolder {
         date_sent = itemView.findViewById(R.id.date_sent);
         date_accepted = itemView.findViewById(R.id.date_accepted);
         date_ended = itemView.findViewById(R.id.date_ended);
+        payment_type = itemView.findViewById(R.id.payment_type);
         linearLayout = itemView.findViewById(R.id.order_layout);
 
 

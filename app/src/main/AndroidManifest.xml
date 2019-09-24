@@ -49,6 +49,9 @@
         <activity android:name=".Home.Notifications.Notifications">
 
         </activity>
+        <activity android:name=".Items.Reservation_History.Reservation_History">
+        </activity>
+        <activity android:name=".Items.Order_History.Order_History"></activity>
         <activity
             android:name=".Items.ConfirmationActivity"
             android:theme="@style/AppTheme..NoActionBar" />

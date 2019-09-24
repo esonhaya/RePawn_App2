@@ -275,9 +275,9 @@ public class RePawner_Profile extends AppCompatActivity {
                         ItemList item = new ItemList(items_object.getString("Product_name"),
                                 items_object.getString("Date_Added"), items_object.getString("seller_name")
                                 , items_object.getString("Category_name"), items_object.getString("Product_Type"),
-                                items_object.getString("Product_image"), items_object.getString("Product_description")
+                                items_object.getString("product_image"), items_object.getString("Product_description")
                                 , items_object.getInt("Promoted"), items_object.getInt("Reserved"), items_object.getInt("Ordered"), items_object.getInt("Product_ID"),
-                                session.getID(), items_object.getInt("Reservable"), items_object.getInt("Image_ID"),
+                                session.getID(), items_object.getInt("reservable"),
                                 items_object.getLong("Product_price"));
                         if (i > 5) {
                             see_all_products.setVisibility(View.VISIBLE);
@@ -332,11 +332,11 @@ public class RePawner_Profile extends AppCompatActivity {
                     if (feedback_array.length() > 0) {
                         for (int i = 0; i < feedback_array.length(); i++) {
                             JSONObject feedback_object = feedback_array.getJSONObject(i);
-                            Feedback_Ratings_List fratings = new Feedback_Ratings_List(feedback_object.getString
+                            Feedback_Ratings_List fratings = new Feedback_Ratings_List(feedback_object.getInt("User_ID"), feedback_object.getString
                                     ("RePawner_Fname") + " " + feedback_object.getString("RePawner_Lname"),
                                     feedback_object.getString("Date_Added"), feedback_object.getString
                                     ("Feedback"), feedback_object.getString("Rating"),
-                                    feedback_object.getString("RePawner_image"));
+                                    feedback_object.getString("user_image"));
                             fratingslist.add(fratings);
                             if (i <= 5) {
                                 fratingslist_min.add(fratings);
@@ -377,9 +377,9 @@ public class RePawner_Profile extends AppCompatActivity {
 
         }
         if (item.getItemId() == R.id.subscribe_prof) {
-            Intent to_subscribe = new Intent(RePawner_Profile.this, Subscription_Info.class);
-            to_subscribe.putExtra("user_id", user_id);
-            startActivity(to_subscribe);
+//            Intent to_subscribe = new Intent(RePawner_Profile.this, Subscription_Info.class);
+//            to_subscribe.putExtra("user_id", user_id);
+//            startActivity(to_subscribe);
         }
         if (item.getItemId() == R.id.edit_prof) {
             Intent to_edit_prof = new Intent(RePawner_Profile.this, EditProfile.class);
@@ -445,7 +445,7 @@ public class RePawner_Profile extends AppCompatActivity {
                     btn_delete.setVisibility(View.VISIBLE);
                     feede.setText(feedback_content.getText());
                     Log.e("feedback", feedback);
-                    if (update_feedback==1) {
+                    if (update_feedback == 1) {
                         btn_delete.setVisibility(View.VISIBLE);
                     }
                     break;

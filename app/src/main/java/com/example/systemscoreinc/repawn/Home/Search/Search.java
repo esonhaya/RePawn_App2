@@ -68,15 +68,12 @@ public class Search extends AppCompatActivity implements SearchView.OnQueryTextL
         getSupportActionBar().setTitle("Search");
         tabLayout = findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // perform whatever you want on back arrow click
-                Intent intent = new Intent(Search.this, Home_Navigation1.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
-                finish();
-            }
+        toolbar.setNavigationOnClickListener(v -> {
+            // perform whatever you want on back arrow click
+            Intent intent = new Intent(Search.this, Home_Navigation1.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+            finish();
         });
         context = this;
         extra = getIntent().getExtras();
@@ -144,10 +141,8 @@ public class Search extends AppCompatActivity implements SearchView.OnQueryTextL
         hia = new Home_Items_Adapter(context, itemlist);
         prod_view = rootView.findViewById(R.id.prod_view);
         prod_view.setHasFixedSize(true);
-        prod_view.setLayoutManager(new GridLayoutManager(context, 2));
+        prod_view.setLayoutManager(new GridLayoutManager(context, 1));
         prod_view.setAdapter(hia);
-
-
     }
 
     public void getRePawners(View rootView) {

@@ -100,7 +100,8 @@ public class LoginActivity extends AppCompatActivity {
                 semail = String.valueOf(email.getText());
                 spass = String.valueOf(pass.getText());
                 StringRequest request = new StringRequest(Request.Method.POST, url, response -> {
-                    if (!response.equals("0")) {
+                    Log.e("response", response);
+                    if (!response.trim().equals("0")) {
                         user_id = Integer.valueOf(response.trim());
                         //   loginSuccess(user_id, semail, 1);
                         check_active();

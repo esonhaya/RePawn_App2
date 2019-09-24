@@ -1,6 +1,8 @@
 package com.example.systemscoreinc.repawn.Items.Order_History;
 
-public class Order_History_List {
+import java.io.Serializable;
+
+public class Order_History_List implements Serializable {
     //    SELECT `Order_Details_ID`, `Date_Sent`, `accepted`, `cancelled`, `Payment_Type`, `Date_End`, `Date_Accepted`,
 //            `Payment_ID`, `Seller_confirmation`, `Buyer_confirmation` FROM `order_details` WHERE 1
     int oid,buyer_id, cancelled, pay_id, seller_confirmation, buyer_confirmation;

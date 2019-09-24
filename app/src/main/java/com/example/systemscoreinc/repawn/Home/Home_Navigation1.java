@@ -13,6 +13,7 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.design.widget.NavigationView;
@@ -77,7 +78,7 @@ public class Home_Navigation1 extends AppCompatActivity implements BaseSliderVie
         ViewPagerEx.OnPageChangeListener {
     IpConfig ip = new IpConfig();
     String url = ip.getUrl() + "home_navigation1.php";
-    TextView tvEmail, pawnshop_all, remats_all, rep_all;
+    TextView tvEmail, pawnshop_all, remats_all, rep_all, all_cats;
     EditText search_input;
     SearchView search;
     private DrawerLayout mDrawerLayout;
@@ -85,6 +86,7 @@ public class Home_Navigation1 extends AppCompatActivity implements BaseSliderVie
     List<PopularList> pawnshop_list = new ArrayList<>();
     List<ItemList> item_list = new ArrayList<>();
     List<CategoryList> cat_list = new ArrayList<>();
+    List<CategoryList> top_4_cat = new ArrayList<>();
     List<RePawnerList> rep_list = new ArrayList<>();
     List<Notifications_List> new_notif = new ArrayList<>();
     RecyclerView pawnshop_view, item_view, cat_view, rep_view;
@@ -155,6 +157,9 @@ public class Home_Navigation1 extends AppCompatActivity implements BaseSliderVie
             to_search.putExtra("pawnshops", (ArrayList<PopularList>) pawnshop_list);
             startActivity(to_search);
         });
+        all_cats.setOnClickListener(view -> {
+            sendNotification();
+        });
 
 
         navigationView.setNavigationItemSelectedListener(
@@ -174,6 +179,7 @@ public class Home_Navigation1 extends AppCompatActivity implements BaseSliderVie
                             Intent to_notif = new Intent(Home_Navigation1.this, Notifications.class);
                             to_notif.putExtra("new_notifs", (ArrayList<Notifications_List>) new_notif);
                             startActivity(to_notif);
+                            //     sendNotification();
                             break;
                         case R.id.nav_items:
                             startActivity(new Intent(Home_Navigation1.this, Pawned.class));
@@ -188,6 +194,26 @@ public class Home_Navigation1 extends AppCompatActivity implements BaseSliderVie
                     }
                     return true;
                 });
+    }
+
+    public void sendNotification() {
+
+
+        //Create the intent that’ll fire when the user taps the notification//
+
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.androidauthority.com/"));
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
+
+//        mBuilder.setContentIntent(pendingIntent);
+        Notification notify=new Notification.Builder
+                (getApplicationContext()).setContentTitle("repawn").setContentText("sample").
+                setContentTitle("sample").setSmallIcon(R.mipmap.rp_launcher_round).build();
+
+        NotificationManager mNotificationManager =
+
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        mNotificationManager.notify(001, notify);
     }
 
     private void notification_sample() {
@@ -207,6 +233,7 @@ public class Home_Navigation1 extends AppCompatActivity implements BaseSliderVie
         pawnshop_all = this.findViewById(R.id.pawnshop_all);
         remats_all = this.findViewById(R.id.remat_all);
         rep_all = this.findViewById(R.id.rep_all);
+        all_cats = this.findViewById(R.id.all_cats);
         pawnshop_view = findViewById(R.id.pawnshops_view);
         item_view = findViewById(R.id.promoted_products_view);
         cat_view = findViewById(R.id.rec_cat);
@@ -224,7 +251,7 @@ public class Home_Navigation1 extends AppCompatActivity implements BaseSliderVie
         rep_view.setLayoutManager(rep_layout);
         pawnshops_adapter = new Home_Pawnshops_Adapter(Home_Navigation1.this, pawnshop_list);
         items_adapter = new Home_Items_Adapter(Home_Navigation1.this, item_list);
-        cats_adapter = new Home_Cat_Adapter(Home_Navigation1.this, cat_list);
+        cats_adapter = new Home_Cat_Adapter(Home_Navigation1.this, top_4_cat);
         rep_adapter = new RePawner_Adapter(Home_Navigation1.this, rep_list);
         pawnshop_view.setAdapter(pawnshops_adapter);
         item_view.setAdapter(items_adapter);
@@ -349,7 +376,9 @@ public class Home_Navigation1 extends AppCompatActivity implements BaseSliderVie
 
                         CategoryList clist = new CategoryList(cc.getString("Category_name"),
                                 cc.getInt("Category_ID"), cc.getInt("cat_count"));
-
+                        if (i < 4) {
+                            top_4_cat.add(clist);
+                        }
                         cat_list.add(clist);
                     }
                     cats_adapter.notifyDataSetChanged();
@@ -381,9 +410,9 @@ public class Home_Navigation1 extends AppCompatActivity implements BaseSliderVie
                         ItemList item = new ItemList(items_object.getString("Product_name"),
                                 items_object.getString("Date_Added"), items_object.getString("seller_name")
                                 , items_object.getString("Category_name"), items_object.getString("Product_Type"),
-                                items_object.getString("Product_image"), items_object.getString("Product_description")
+                                items_object.getString("product_image"), items_object.getString("Product_description")
                                 , items_object.getInt("Promoted"), items_object.getInt("Reserved"), items_object.getInt("Ordered"), items_object.getInt("Product_ID"),
-                                items_object.getInt("User_ID"), items_object.getInt("Reservable"), items_object.getInt("Image_ID"),
+                                items_object.getInt("User_ID"), items_object.getInt("reservable"),
                                 items_object.getLong("Product_price"));
                         item_list.add(item);
                     }

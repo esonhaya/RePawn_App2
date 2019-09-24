@@ -13,6 +13,8 @@ import com.example.systemscoreinc.repawn.ItemList;
 import com.example.systemscoreinc.repawn.Pawned_Info.Pawned_Info;
 import com.example.systemscoreinc.repawn.R;
 import com.example.systemscoreinc.repawn.Session;
+import com.squareup.picasso.MemoryPolicy;
+import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -62,21 +64,20 @@ public class Home_Items_Adapter extends RecyclerView.Adapter<Home_Items_ViewHold
         }
         Picasso.get()
                 .load(ip.getUrl_image() +ppllist.getItem_image())
+                .memoryPolicy(MemoryPolicy.NO_CACHE)
+                .networkPolicy(NetworkPolicy.NO_CACHE)
                 .fit()
                 .into(holder.item_image);
         holder.ProdName.setText(ppllist.getItem_name());
         holder.SellName.setText(ppllist.getSeller_name());
         holder.ItemPrice.setText("₱ " + ppllist.getPrice());
 
-        holder.linearLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        holder.linearLayout.setOnClickListener(v -> {
 
-                Intent to_item = new Intent(Ctx, Pawned_Info.class);
-                to_item.putExtra("item", ppllist);
-                Ctx.startActivity(to_item);
+            Intent to_item = new Intent(Ctx, Pawned_Info.class);
+            to_item.putExtra("item", ppllist);
+            Ctx.startActivity(to_item);
 
-            }
         });
 
         //  holder.productTitle.setText(); // Here's your value

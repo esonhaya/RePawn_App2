@@ -25,7 +25,7 @@ public class Order_ViewHolder extends RecyclerView.ViewHolder {
         item_ribbon = itemView.findViewById(R.id.item_ribbon);
         request_status = itemView.findViewById(R.id.request_status);
         date_sent=itemView.findViewById(R.id.date_sent);
-        linearLayout = itemView.findViewById(R.id.my_pawned_llayout);
+        linearLayout = itemView.findViewById(R.id.order_layout);
 
 
     }

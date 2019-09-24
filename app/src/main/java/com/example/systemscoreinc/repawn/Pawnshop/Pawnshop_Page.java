@@ -229,7 +229,7 @@ public class Pawnshop_Page extends AppCompatActivity {
                                 , items_object.getString("Category_name"), items_object.getString("Product_Type"),
                                 items_object.getString("Product_image"), items_object.getString("Product_description")
                                 , items_object.getInt("Promoted"), items_object.getInt("Reserved"), items_object.getInt("Ordered"), items_object.getInt("Product_ID"),
-                                user_id, items_object.getInt("Reservable"), items_object.getInt("Image_ID"),
+                                user_id, items_object.getInt("Reservable"),
                                 items_object.getLong("Product_price"));
                         if (i > 5) {
                             see_all_products.setVisibility(View.VISIBLE);
@@ -436,13 +436,13 @@ public class Pawnshop_Page extends AppCompatActivity {
                 if (feedback_array.length() > 0) {
                     for (int i = 0; i < feedback_array.length(); i++) {
                         JSONObject feedback_object = feedback_array.getJSONObject(i);
-                        Feedback_Ratings_List fratings = new Feedback_Ratings_List(feedback_object.getString
+                        Feedback_Ratings_List fratings = new Feedback_Ratings_List(feedback_object.getInt("User_ID"),feedback_object.getString
                                 ("RePawner_Fname") + " " + feedback_object.getString("RePawner_Lname"),
                                 feedback_object.getString("Date_Added"), feedback_object.getString
                                 ("Feedback"), feedback_object.getString("Rating"),
                                 feedback_object.getString("user_image"));
                         fratingslist.add(fratings);
-                        if (i <= 5) {
+                        if (i <5) {
                             fratingslist_min.add(fratings);
                         }
                     }
@@ -518,15 +518,12 @@ public class Pawnshop_Page extends AppCompatActivity {
     }
 
     private void check_if_following() {
-        StringRequest follow_status = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                if_follow = Integer.valueOf(response);
-                Log.e("follow", String.valueOf(if_follow));
-                if (if_follow == 1) {
-                    btn_follow.setVisibility(View.GONE);
-                    btn_unfollow.setVisibility(View.VISIBLE);
-                }
+        StringRequest follow_status = new StringRequest(Request.Method.POST, url, response -> {
+            if_follow = Integer.valueOf(response.trim());
+            Log.e("follow", String.valueOf(if_follow));
+            if (if_follow == 1) {
+                btn_follow.setVisibility(View.GONE);
+                btn_unfollow.setVisibility(View.VISIBLE);
             }
         }, new Response.ErrorListener() {
             @Override

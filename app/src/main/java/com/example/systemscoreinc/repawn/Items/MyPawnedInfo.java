@@ -1,10 +1,15 @@
 package com.example.systemscoreinc.repawn.Items;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -26,15 +31,21 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.CustomTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.example.systemscoreinc.repawn.Config.Config;
+import com.example.systemscoreinc.repawn.Home.Search.Flexible_RePawner_Operator;
 import com.example.systemscoreinc.repawn.IpConfig;
 import com.example.systemscoreinc.repawn.ItemList;
+import com.example.systemscoreinc.repawn.Items.Order_History.Order_History;
 import com.example.systemscoreinc.repawn.Items.Order_History.Order_History_Adapter;
 import com.example.systemscoreinc.repawn.Items.Order_History.Order_History_List;
 import com.example.systemscoreinc.repawn.Items.Pending_Request.Pending_Request_Adapter;
 import com.example.systemscoreinc.repawn.Items.Pending_Request.Pending_Request_List;
 import com.example.systemscoreinc.repawn.Items.Promotion_History.Promotion_History;
 import com.example.systemscoreinc.repawn.Items.Promotion_History.Promotion_History_List;
+import com.example.systemscoreinc.repawn.Items.Reservation_History.Reservation_History;
 import com.example.systemscoreinc.repawn.Items.Reservation_History.Reservation_History_Adapter;
 import com.example.systemscoreinc.repawn.Items.Reservation_History.Reservation_History_List;
 import com.example.systemscoreinc.repawn.R;
@@ -44,6 +55,8 @@ import com.paypal.android.sdk.payments.PayPalPayment;
 import com.paypal.android.sdk.payments.PayPalService;
 import com.paypal.android.sdk.payments.PaymentActivity;
 import com.paypal.android.sdk.payments.PaymentConfirmation;
+import com.squareup.picasso.MemoryPolicy;
+import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 import com.valdesekamdem.library.mdtoast.MDToast;
 
@@ -83,7 +96,7 @@ public class MyPawnedInfo extends AppCompatActivity {
     Pending_Request_Adapter order_adapter;
     Pending_Request_Adapter reserve_adapter;
     String status;
-    ImageView product_image;
+    ImageView product_image, product_receipt;
     TextView pname, pdesc, pprice, pcat, daysleft, promhistory, all_pending_orders, all_pending_reserve, nop, nrp;
     LinearLayout reserve_layout, order_layout, payment_layout, order_info_layout, reserve_info_layout;
     TextView paypal_id, pay_amount, Date_paid;
@@ -93,9 +106,11 @@ public class MyPawnedInfo extends AppCompatActivity {
     Long spprice;
     int pid, res;
     Button seller_confirm;
-    int amount, choice, order_details_id;
+    int amount, choice, order_details_id, seller_confirmed;
     int reserved, ordered, promoted;
-    String spayment_type = "manual";
+    int promotable, editable = 0;
+    int item_selected;
+    String spayment_type = "manual", receipt;
     private static PayPalConfiguration config = new PayPalConfiguration()
 
             // Start with mock environment.  When ready, switch to sandbox (ENVIRONMENT_SANDBOX)
@@ -144,10 +159,30 @@ public class MyPawnedInfo extends AppCompatActivity {
         spprice = item.getPrice();
         item_image = item.getItem_image();
         promoted = item.getPromoted();
+        if (item.getOrdered() == 0 && item.getReserved() == 0) {
+            editable = 1;
+        }
         Picasso.get()
                 .load(ip.getUrl_image() + item_image)
+                .memoryPolicy(MemoryPolicy.NO_CACHE)
+                .networkPolicy(NetworkPolicy.NO_CACHE)
                 .fit()
                 .into(product_image);
+//        Glide.with(this)
+//                .asBitmap()
+//                .load(ip.getUrl_image()+Simage)
+//                .into(new CustomTarget<Bitmap>() {
+//                    @Override
+//                    public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+//                        bimage = resource;
+//                        product_image.setImageBitmap(resource);
+//                    }
+//
+//                    @Override
+//                    public void onLoadCleared(@Nullable Drawable placeholder) {
+//                    }
+//                });
+        get_receipt();
         pname.setText(spname);
         pprice.setText("₱ " + spprice);
         pcat.setText(spcat);
@@ -156,20 +191,43 @@ public class MyPawnedInfo extends AppCompatActivity {
         getPromotionDays();
         get_order_details();
         get_reserve_details();
-        Visibility_All();
     }
 
     public void Visibility_All() {
-
-        if (ordered == 1 && spayment_type.equals("manual")) {
+        Log.e("payment", spayment_type);
+        if (spayment_type.equals("manual")) {
             seller_confirm.setVisibility(View.VISIBLE);
 
         }
-        if(spayment_type.equals("paypal")){
+        if (spayment_type.equals("paypal")) {
             payment_layout.setVisibility(View.VISIBLE);
             get_payment_details();
         }
 
+    }
+
+    public void get_receipt() {
+        StringRequest req = new StringRequest(Request.Method.POST, url, response -> {
+            receipt = response.trim();
+            Picasso.get()
+                    .load(ip.getUrl_image() + receipt)
+                    .memoryPolicy(MemoryPolicy.NO_CACHE)
+                    .networkPolicy(NetworkPolicy.NO_CACHE)
+                    .fit()
+                    .into(product_receipt);
+        }, error -> {
+
+        }) {
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<>();
+                params.put("get_receipt", "1");
+                params.put("pid", String.valueOf(pid));
+
+
+                return params;
+            }
+        };
+        rq.add(req);
     }
 
     public void recycler_related() {
@@ -206,20 +264,15 @@ public class MyPawnedInfo extends AppCompatActivity {
 
     public void getPromotionDays() {
 
-        StringRequest request = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                if (response.equals("0")) {
-                    daysleft.setText("Not under promotion");
-                } else {
-                    daysleft.setText(response + " days left");
-                }
+        StringRequest request = new StringRequest(Request.Method.POST, url, response -> {
+            Log.e("days", response);
+            if (!response.trim().equals("0")) {
+                daysleft.setText(response + " days left");
+            } else {
+                daysleft.setText("Not under promotion");
             }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
+        }, error -> {
 
-            }
         }) {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
@@ -245,7 +298,6 @@ public class MyPawnedInfo extends AppCompatActivity {
                         Promotion_History_List prolist = new Promotion_History_List(history.getString("Date_Started"),
                                 history.getString("Date_To_End"), history.getString("Paypal_Payment_ID"),
                                 history.getString("Amount"));
-
                         prom_hist_list.add(prolist);
                     }
                 } else {
@@ -311,6 +363,8 @@ public class MyPawnedInfo extends AppCompatActivity {
             edit_info.putExtra("pprice", spprice);
             edit_info.putExtra("pdesc", spdesc);
             edit_info.putExtra("reservable", res);
+            edit_info.putExtra("item_image", item_image);
+            edit_info.putExtra("receipt", receipt);
             context.startActivity(edit_info);
         }
         if (item.getItemId() == R.id.delete_pawned) {
@@ -326,41 +380,51 @@ public class MyPawnedInfo extends AppCompatActivity {
                     })
                     .create();
             onconf.show();
-            if (item.getItemId() == R.id.promote_pawned) {
-                String[] promote_amount = {"100 pesos for 1 week, 200 pesos for 2 weeks,300 pesos for 1 month"};
-                int item_selected = 0;
-                android.support.v7.app.AlertDialog prom = new android.support.v7.app.AlertDialog.Builder(context, R.style.RePawnDialog)
-                        .setTitle("Promotion Options: Paypal Only")
-                        .setSingleChoiceItems(promote_amount, item_selected, (dialogInterface, selectedIndex) -> {
-                            choice = selectedIndex;
-                            switch (choice) {
-                                case 0:
-                                    amount = 100;
-                                    break;
-                                case 1:
-                                    amount = 200;
-                                    break;
-                                case 2:
-                                    amount = 300;
-                                    break;
-                                default:
-                                    break;
+        }
+        if (item.getItemId() == R.id.promote_pawned) {
+            String[] promote_amount = {"100 pesos for 1 week", " 200 pesos for 2 weeks", "300 pesos for 1 month"};
+            item_selected = 1;
+            android.support.v7.app.AlertDialog prom = new android.support.v7.app.AlertDialog.Builder(context, AlertDialog.THEME_DEVICE_DEFAULT_DARK)
+                    .setTitle("Promotion Options: Paypal Only")
+                    .setSingleChoiceItems(promote_amount, item_selected, (dialogInterface, selectedIndex) -> {
+                        choice = selectedIndex;
+                        switch (choice) {
+                            case 0:
+                                item_selected = 1;
+                                amount = 100;
+                                break;
+                            case 1:
+                                item_selected = 2;
+                                amount = 200;
+                                break;
+                            case 2:
+                                item_selected = 3;
+                                amount = 300;
+                                break;
+                            default:
+                                break;
 
-                            }
-                        })
-                        .setPositiveButton("Yes", (dialog, which) -> pay_with_paypal())
-                        .setNegativeButton("No", (dialog, which) -> {
+                        }
+                    })
+                    .setPositiveButton("Yes", (dialog, which) -> pay_with_paypal())
+                    .setNegativeButton("No", (dialog, which) -> {
 
-                        })
-                        .create();
-                prom.show();
-            }
+                    })
+                    .create();
+            prom.show();
         }
 
         return super.onOptionsItemSelected(item);
     }
 
     public void pay_with_paypal() {
+        if (item_selected == 1) {
+            amount = 100;
+        } else if (item_selected == 2) {
+            amount = 200;
+        } else {
+            amount = 300;
+        }
         PayPalPayment payment = new PayPalPayment(new BigDecimal(String.valueOf(amount)), "PHP", "Payment for promotion",
                 PayPalPayment.PAYMENT_INTENT_SALE);
         Intent intent = new Intent(this, PaymentActivity.class);
@@ -427,6 +491,8 @@ public class MyPawnedInfo extends AppCompatActivity {
         toolbar = findViewById(R.id.toolbar);
         promhistory = this.findViewById(R.id.promotion_history);
         product_image = this.findViewById(R.id.product_image);
+        product_receipt = this.findViewById(R.id.product_receipt);
+
         //under order layout
         //layouts
         order_info_layout = this.findViewById(R.id.order_info_layout);
@@ -443,11 +509,12 @@ public class MyPawnedInfo extends AppCompatActivity {
         sarh = this.findViewById(R.id.sarh);
         nop = this.findViewById(R.id.no_orders_prompt);
         nrp = this.findViewById(R.id.no_reserve_prompt);
+        nop.setOnClickListener(all_click);
         seller_confirm.setOnClickListener(view -> {
             StringRequest request = new StringRequest(Request.Method.POST, url, response ->
                     MDToast.makeText(context, response, MDToast.LENGTH_LONG, MDToast.TYPE_SUCCESS).show(), error -> {
 
-                    }) {
+            }) {
                 @Override
                 protected Map<String, String> getParams() throws AuthFailureError {
                     Map<String, String> params = new HashMap<>();
@@ -460,10 +527,15 @@ public class MyPawnedInfo extends AppCompatActivity {
             rq.add(request);
         });
         saoh.setOnClickListener(view -> {
+            Intent to_history = new Intent(context, Order_History.class);
+            to_history.putExtra("order_list", (ArrayList<Order_History_List>) ohl);
+            startActivity(to_history);
 
         });
         sarh.setOnClickListener(view -> {
-
+            Intent to_history = new Intent(context, Reservation_History.class);
+            to_history.putExtra("order_list", (ArrayList<Reservation_History_List>) rhl);
+            startActivity(to_history);
         });
 
 
@@ -486,11 +558,16 @@ public class MyPawnedInfo extends AppCompatActivity {
                                 , info.getString("Payment_Type"), info.getString("Date_End"),
                                 info.getString("Date_Accepted"), info.getString("buyer_name"));
                         ohl.add(list);
-                        if (i == 0 && info.getInt("cancelled") == 0) {
+                        if (info.getInt("active") == 1) {
+                            seller_confirmed = info.getInt("Seller_confirmation");
+                            spayment_type = info.getString("Payment_Type");
                             ohl_current.add(list);
+                            order_details_id = info.getInt("Order_Details_ID");
+                            Visibility_All();
                         }
-                        if (i == 0 && info.getInt("cancelled") == 1) {
+                        if (i == 0 && info.getInt("active") == 0) {
                             nop.setVisibility(View.VISIBLE);
+                            saoh.setVisibility(View.VISIBLE);
                         }
                     }
                     oha.notifyDataSetChanged();
@@ -523,22 +600,24 @@ public class MyPawnedInfo extends AppCompatActivity {
                 Log.e("response", response);
                 JSONObject pawnedobject = new JSONObject(response);
                 //extracting json array from response string
-                JSONArray item_array = pawnedobject.getJSONArray("reservation_info");
+                JSONArray item_array = pawnedobject.getJSONArray("reservation_history");
                 if (item_array.length() > 0) {
                     for (int i = 0; i < item_array.length(); i++) {
                         JSONObject info = item_array.getJSONObject(i);
-                        Reservation_History_List list = new Reservation_History_List(info.getString("Date_Started"),
+                        Reservation_History_List list = new Reservation_History_List(info.getString("Date_Sent"),
                                 info.getString("Date_End"), info.getString("Date_Accepted"),
-                                info.getString("buyer_name"), info.getInt("User_ID"), info.getInt("cancelled"));
-                        if (i == 0 && info.getInt("cancelled") == 0) {
+                                info.getString("buyer_name"), info.getInt("User_ID"), info.getInt("cancelled"), info.getString("Payment_Type"));
+                        if (info.getInt("active") == 1) {
                             rhl_current.add(list);
+
                         }
-                        if (i == 0 && info.getInt("cancelled") == 1) {
+                        if (i == 0 && info.getInt("active") == 0) {
                             nrp.setVisibility(View.VISIBLE);
+                            sarh.setVisibility(View.VISIBLE);
                         }
                         rhl.add(list);
                     }
-
+                    rha.notifyDataSetChanged();
                 } else {
                     nrp.setVisibility(View.VISIBLE);
                     sarh.setVisibility(View.GONE);
@@ -563,7 +642,7 @@ public class MyPawnedInfo extends AppCompatActivity {
     public void get_payment_details() {
         StringRequest request = new StringRequest(Request.Method.POST, url, response -> {
             try {
-                Log.e("response", response);
+                Log.e("payment_details", response);
                 JSONObject pawnedobject = new JSONObject(response);
                 //extracting json array from response string
                 JSONArray item_array = pawnedobject.getJSONArray("payment_info");
@@ -572,9 +651,10 @@ public class MyPawnedInfo extends AppCompatActivity {
                         JSONObject info = item_array.getJSONObject(i);
                         paypal_id.append(info.getString("Paypal_Payment_ID"));
                         pay_amount.append(info.getString("Amount"));
-                        Date_paid.append(info.getString("Date_Added"));
-                        seller_confirm.setVisibility(View.VISIBLE);
-
+                        Date_paid.append(info.getString("Date_Paid"));
+                        if (seller_confirmed != 1) {
+                            seller_confirm.setVisibility(View.VISIBLE);
+                        }
                     }
 
                 } else {
@@ -613,28 +693,26 @@ public class MyPawnedInfo extends AppCompatActivity {
         return convetDateFormat.format(date);
     }
 
-    private View.OnClickListener all_click = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
+    private View.OnClickListener all_click = v -> {
 
-            switch (v.getId()) {
-                case R.id.all_pending_orders:
+        switch (v.getId()) {
+            case R.id.all_pending_orders:
 
-
-                    break;
-                default:
-                    break;
-            }
+                break;
+            default:
+                break;
         }
     };
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        if (status.equals("available")) {
-            getMenuInflater().inflate(R.menu.pawned_available, menu);
-        }
-        if (status.equals("promoted")) {
-            getMenuInflater().inflate(R.menu.pawned_promoted, menu);
+        Log.e("editable", String.valueOf(editable));
+        if (editable == 1) {
+            if (promoted != 1) {
+                getMenuInflater().inflate(R.menu.pawned_available, menu);
+            } else {
+                getMenuInflater().inflate(R.menu.pawned_promoted, menu);
+            }
         }
         return super.onCreateOptionsMenu(menu);
     }
@@ -651,14 +729,14 @@ public class MyPawnedInfo extends AppCompatActivity {
                         JSONObject item = item_array.getJSONObject(i);
                         Pending_Request_List list = new Pending_Request_List(item.getString("user_name")
                                 , "order", item.getString("Status"),
-                                item.getString("Date_Started"), item.getString("user_image")
+                                item.getString("Date_Sent"), item.getString("user_image")
                                 , item.getString("Order_Product_ID"), item.getString("Order_Details_ID"),
                                 item.getString("User_ID"), item.getString("Payment_Type"), String.valueOf(pid));
                         order_list.add(list);
-                        if (i < 3) {
+                        if (i < 2) {
                             order_list_min.add(list);
                         }
-                        if (i > 3) {
+                        if (i > 2) {
                             all_pending_orders.setVisibility(View.VISIBLE);
                         }
                     }
@@ -676,7 +754,7 @@ public class MyPawnedInfo extends AppCompatActivity {
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<>();
                 params.put("Product_ID", String.valueOf(pid));
-                params.put("order_requests", "1");
+                params.put("item_order_requests", "1");
 
                 return params;
             }
@@ -693,15 +771,15 @@ public class MyPawnedInfo extends AppCompatActivity {
                         JSONObject item = item_array.getJSONObject(i);
                         Pending_Request_List list = new Pending_Request_List(item.getString("user_name")
                                 , "reserve", item.getString("Status"),
-                                item.getString("Date_Started"), item.getString("user_image"),
+                                item.getString("Date_Sent"), item.getString("user_image"),
                                 item.getString("Reservation_Product_ID"),
                                 item.getString("Reservation_Details_ID"), item.getString("User_ID"),
                                 "reservation", String.valueOf(pid));
                         reserve_list.add(list);
-                        if (i < 3) {
+                        if (i < 2) {
                             reserve_list_min.add(list);
                         }
-                        if (i > 3) {
+                        if (i > 2) {
                             all_pending_reserve.setVisibility(View.VISIBLE);
                         }
                     }
@@ -718,7 +796,7 @@ public class MyPawnedInfo extends AppCompatActivity {
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<>();
                 params.put("Product_ID", String.valueOf(pid));
-                params.put("reserve_requests", "1");
+                params.put("item_reserve_requests", "1");
                 return params;
             }
         };

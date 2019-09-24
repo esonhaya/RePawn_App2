@@ -32,6 +32,7 @@ public class ConfirmationActivity extends AppCompatActivity {
     private ViewPager viewPager;
     IpConfig ip = new IpConfig();
     String url = ip.getUrl() + "confirmation.php";
+    Bundle extra;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,23 +44,25 @@ public class ConfirmationActivity extends AppCompatActivity {
         Session session = new Session(context);
         //Getting Intent
         Intent intent = getIntent();
+        extra = intent.getExtras();
         try {
-            JSONObject jsonDetails = new JSONObject(intent.getStringExtra("PaymentDetails"));
+            JSONObject jsonDetails = new JSONObject(extra.getString("PaymentDetails"));
             if (intent.getStringExtra("pay_order") == null) {
 
                 Log.e("paypal info", String.valueOf(jsonDetails));
-                to_database(jsonDetails.getJSONObject("response"), intent.getStringExtra("PaymentAmount"), intent.getStringExtra("pawned_id"));
+                to_database(jsonDetails.getJSONObject("response"), extra.getInt("PaymentAmount"), extra.getInt("pawned_id"));
                 //Displaying payment details
-                showDetails(jsonDetails.getJSONObject("response"), intent.getStringExtra("PaymentAmount"));
+                showDetails(jsonDetails.getJSONObject("response"), extra.getInt("PaymentAmount"));
             } else {
-                order_payment(jsonDetails.getJSONObject("response"), intent.getStringExtra("PaymentAmount"), intent.getStringExtra("oid"));
+                order_payment(jsonDetails.getJSONObject("response"), extra.getLong("PaymentAmount"), extra.getString("oid"));
+                showDetails(jsonDetails.getJSONObject("response"), extra.getLong("PaymentAmount"));
             }
         } catch (JSONException e) {
             Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
         }
     }
 
-    private void showDetails(JSONObject jsonDetails, String paymentAmount) throws JSONException {
+    private void showDetails(JSONObject jsonDetails, long paymentAmount) throws JSONException {
         //Views
         TextView textViewId = (TextView) findViewById(R.id.paymentId);
         TextView textViewStatus = (TextView) findViewById(R.id.paymentStatus);
@@ -71,7 +74,7 @@ public class ConfirmationActivity extends AppCompatActivity {
         textViewAmount.setText(paymentAmount + " PHP");
     }
 
-    private void order_payment(final JSONObject jsonDetails, final String amount, final String oid) {
+    private void order_payment(final JSONObject jsonDetails, final long amount, final String oid) {
         RequestQueue rq = Volley.newRequestQueue(getApplicationContext());
         StringRequest preq = new StringRequest(Request.Method.POST, url, response -> {
 
@@ -86,8 +89,8 @@ public class ConfirmationActivity extends AppCompatActivity {
                 try {
                     params.put("order_payment", "1");
                     params.put("paypal_id", jsonDetails.getString("id"));
-                    params.put("oid", oid);
-                    params.put("amount", amount);
+                    params.put("oid",oid);
+                    params.put("amount", String.valueOf(amount));
 
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -98,7 +101,7 @@ public class ConfirmationActivity extends AppCompatActivity {
         rq.add(preq);
     }
 
-    private void to_database(final JSONObject jsonDetails, final String amount, final String pid) {
+    private void to_database(final JSONObject jsonDetails, final int amount, final int pid) {
         RequestQueue rq = Volley.newRequestQueue(getApplicationContext());
         StringRequest preq = new StringRequest(Request.Method.POST, url, response -> {
 
@@ -113,8 +116,8 @@ public class ConfirmationActivity extends AppCompatActivity {
                 try {
                     params.put("promotion_pawned", "1");
                     params.put("paypal_id", jsonDetails.getString("id"));
-                    params.put("pid", pid);
-                    params.put("amount", amount);
+                    params.put("pid", String.valueOf(pid));
+                    params.put("amount", String.valueOf(amount));
 
                 } catch (JSONException e) {
                     e.printStackTrace();

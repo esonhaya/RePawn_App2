@@ -3,14 +3,17 @@ package com.example.systemscoreinc.repawn.Orders;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.DividerItemDecoration;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.*;
 import android.util.Log;
 import android.view.MenuItem;
 
+import android.view.View;
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -19,7 +22,13 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.systemscoreinc.repawn.Home.Home_Navigation1;
+import com.example.systemscoreinc.repawn.Home.Items.Home_Items_Adapter;
+import com.example.systemscoreinc.repawn.Home.Search.Pawnshops;
+import com.example.systemscoreinc.repawn.Home.Search.Products;
+import com.example.systemscoreinc.repawn.Home.Search.RePawners;
+import com.example.systemscoreinc.repawn.Home.Search.Search;
 import com.example.systemscoreinc.repawn.IpConfig;
+import com.example.systemscoreinc.repawn.ItemList;
 import com.example.systemscoreinc.repawn.R;
 import com.example.systemscoreinc.repawn.Session;
 
@@ -36,10 +45,16 @@ public class Orders extends AppCompatActivity {
     Context context;
     Session session;
     RequestQueue rq;
+    private Toolbar toolbar;
+    private TabLayout tabLayout;
+    private ViewPager viewPager;
     int rid;
     Order_Adapter oa;
-    List<Order_List> ol = new ArrayList<>();
-    RecyclerView rv;
+    Order_Adapter ra;
+    List<Order_List> order_list = new ArrayList<>();
+    List<Order_List> reserve_list = new ArrayList<>();
+    RecyclerView order_view;
+    RecyclerView reserve_view;
     IpConfig ip = new IpConfig();
     String url = ip.getUrl() + "orders.php";
 
@@ -50,9 +65,11 @@ public class Orders extends AppCompatActivity {
         session = new Session(this);
         rid = session.getID();
         rq = Volley.newRequestQueue(context);
-//        price = Float.valueOf(pprice.getText().toString());
-        review();
-        Toolbar toolbar = findViewById(R.id.toolbar);
+        toolbar = findViewById(R.id.toolbar);
+        viewPager = findViewById(R.id.viewpager);
+        setupViewPager(viewPager);
+        tabLayout = findViewById(R.id.tabs);
+        tabLayout.setupWithViewPager(viewPager);
         toolbar.setTitle("Orders");
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -69,57 +86,127 @@ public class Orders extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void review() {
-        rv = this.findViewById(R.id.rec_orders);
-        oa = new Order_Adapter(context, ol);
-        rv.setHasFixedSize(true);
-        LinearLayoutManager reco = new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false);
-        DividerItemDecoration dec = new DividerItemDecoration(context, DividerItemDecoration.VERTICAL);
-        rv.setLayoutManager(reco);
-        rv.setAdapter(oa);
-        rv.addItemDecoration(dec);
-        get_all_requests();
+
+    public void getOrders(View rootView) {
+        oa = new Order_Adapter(context, order_list);
+        order_view = rootView.findViewById(R.id.order_view);
+        order_view.setHasFixedSize(true);
+        order_view.setLayoutManager(new GridLayoutManager(context, 1));
+        order_view.setAdapter(oa);
+        get_orders();
     }
-
-    public void get_all_requests() {
-        StringRequest request = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                try {
-                    Log.e("response", response);
-                    JSONObject pawnedobject = new JSONObject(response);
-                    //extracting json array from response string
-                    JSONArray item_array = pawnedobject.getJSONArray("orders");
-                    if (item_array.length() > 0) {
-                        for (int i = 0; i < item_array.length(); i++) {
-                            JSONObject item = item_array.getJSONObject(i);
-                            Order_List list = new Order_List(item.getString("product_image"), item.getString("Product_ID"),
-                                    item.getString("Product_price"), item.getString("request_type"), item.getString("Product_name")
-                                    , item.getString("Date_Sent"));
-                            ol.add(list);
-                        }
-                        oa.notifyDataSetChanged();
-                    } else {
+    public void getReservations(View rootView) {
+        ra = new Order_Adapter(context, reserve_list);
+        reserve_view = rootView.findViewById(R.id.order_view);
+        reserve_view.setHasFixedSize(true);
+        reserve_view.setLayoutManager(new GridLayoutManager(context, 1));
+        reserve_view.setAdapter(ra);
+        get_reserves();
+    }
+    public void get_orders(){
+        StringRequest request = new StringRequest(Request.Method.POST, url, response -> {
+            try {
+                Log.e("response", response);
+                JSONObject pawnedobject = new JSONObject(response);
+                //extracting json array from response string
+                JSONArray item_array = pawnedobject.getJSONArray("orders");
+                if (item_array.length() > 0) {
+                    for (int i = 0; i < item_array.length(); i++) {
+                        JSONObject item = item_array.getJSONObject(i);
+                        Order_List list = new Order_List(item.getInt("Order_Product_ID"),item.getString("product_image"), item.getString("Product_ID"),
+                                item.getLong("Product_price"), item.getString("request_type"), item.getString("Product_name")
+                                , item.getString("Date_Sent"), item.getString("Product_Type"),item.getString("Status"));
+                        order_list.add(list);
                     }
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                    oa.notifyDataSetChanged();
+                } else {
                 }
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
+        }, error -> {
 
-            }
         }) {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<>();
-                params.put("all_requests", "1");
+                params.put("order_requests", "1");
                 params.put("user_id", String.valueOf(session.getID()));
 
                 return params;
             }
         };
         rq.add(request);
+    }
+    public void get_reserves(){
+        StringRequest request = new StringRequest(Request.Method.POST, url, response -> {
+            try {
+                Log.e("response", response);
+                JSONObject pawnedobject = new JSONObject(response);
+                //extracting json array from response string
+                JSONArray item_array = pawnedobject.getJSONArray("orders");
+                if (item_array.length() > 0) {
+                    for (int i = 0; i < item_array.length(); i++) {
+                        JSONObject item = item_array.getJSONObject(i);
+                        Order_List list = new Order_List(item.getInt("Reservation_Product_ID"),item.getString("product_image"), item.getString("Product_ID"),
+                                item.getLong("Product_price"), item.getString("request_type"), item.getString("Product_name")
+                                , item.getString("Date_Sent"), item.getString("Product_Type"),item.getString("Status"));
+                        reserve_list.add(list);
+                    }
+                    ra.notifyDataSetChanged();
+                } else {
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }, error -> {
+
+        }) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<>();
+                params.put("reserve_requests", "1");
+                params.put("user_id", String.valueOf(session.getID()));
+
+                return params;
+            }
+        };
+        rq.add(request);
+    }
+
+    private void setupViewPager(ViewPager viewPager) {
+        Orders.ViewPagerAdapter adapter = new Orders.ViewPagerAdapter(getSupportFragmentManager());
+        adapter.addFragment(new Fragment_Orders(), "Orders");
+        adapter.addFragment(new Fragment_Reservations(), "Reservations");
+        viewPager.setAdapter(adapter);
+    }
+
+    class ViewPagerAdapter extends FragmentPagerAdapter {
+        private final List<Fragment> mFragmentList = new ArrayList<>();
+        private final List<String> mFragmentTitleList = new ArrayList<>();
+
+        public ViewPagerAdapter(FragmentManager manager) {
+            super(manager);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            return mFragmentList.get(position);
+        }
+
+        @Override
+        public int getCount() {
+            return mFragmentList.size();
+        }
+
+        public void addFragment(Fragment fragment, String title) {
+            mFragmentList.add(fragment);
+            mFragmentTitleList.add(title);
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return mFragmentTitleList.get(position);
+        }
     }
 }

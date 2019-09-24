@@ -11,6 +11,8 @@ import android.view.ViewGroup;
 import com.example.systemscoreinc.repawn.IpConfig;
 import com.example.systemscoreinc.repawn.Pawnshop.Pawnshop_Page;
 import com.example.systemscoreinc.repawn.R;
+import com.squareup.picasso.MemoryPolicy;
+import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -54,6 +56,8 @@ public class Home_Pawnshops_Adapter extends RecyclerView.Adapter<Home_Pawnshop_V
         float rating = (float) poplist.getRate_total() / poplist.getRate_count();
         Picasso.get()
                 .load(ip.getUrl_image() + poplist.getP_image())
+                .memoryPolicy(MemoryPolicy.NO_CACHE)
+                .networkPolicy(NetworkPolicy.NO_CACHE)
                 .fit()
                 .into(holder.pawnImage);
         holder.pawnRate.setRating(rating);

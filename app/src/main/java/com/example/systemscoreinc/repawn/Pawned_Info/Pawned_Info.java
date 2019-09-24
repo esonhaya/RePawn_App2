@@ -22,9 +22,13 @@ import com.android.volley.toolbox.Volley;
 import com.example.systemscoreinc.repawn.Home.Items.Home_Items_Adapter;
 import com.example.systemscoreinc.repawn.IpConfig;
 import com.example.systemscoreinc.repawn.ItemList;
+import com.example.systemscoreinc.repawn.Pawnshop.Pawnshop_Page;
+import com.example.systemscoreinc.repawn.Profile_Related.RePawner_Profile;
 import com.example.systemscoreinc.repawn.R;
 import com.example.systemscoreinc.repawn.Session;
 import com.glide.slider.library.SliderLayout;
+import com.squareup.picasso.MemoryPolicy;
+import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 import com.valdesekamdem.library.mdtoast.MDToast;
 import org.json.JSONArray;
@@ -43,7 +47,7 @@ public class Pawned_Info extends AppCompatActivity {
     private Button btn_order, btn_reserve;
     private TextView item_name, item_desc, seller_name, item_price, item_category, seller_products, cat_products;
     private LinearLayout seller_products_layout, cat_products_layout;
-    ImageView product_image, see_all_cat_products, see_all_products;
+    ImageView product_image, see_all_cat_products, see_all_products, product_receipt;
     Bundle extras;
     Session session;
     Context context;
@@ -57,6 +61,7 @@ public class Pawned_Info extends AppCompatActivity {
     String item_type, Sseller_name, Scat_name;
     IpConfig ip = new IpConfig();
     String url = ip.getUrl() + "pawned_info.php";
+    String receipt;
     RequestQueue rq;
     int reservable, image_id;
     String payment_type;
@@ -71,39 +76,45 @@ public class Pawned_Info extends AppCompatActivity {
         session = new Session(context);
         declarestuff();
         assignstuff();
-        check_requests();
+
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
-        item_desc.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (!moreSwitcher) {
-                    item_desc.setLines(1);
-                    item_desc.setMaxLines(2);
-                    moreSwitcher = true;
-                } else {
-                    item_desc.setLines(1);
-                    item_desc.setMaxLines(10);
-                    moreSwitcher = false;
-                }
+        item_desc.setOnClickListener(view -> {
+            if (!moreSwitcher) {
+                item_desc.setLines(1);
+                item_desc.setMaxLines(2);
+                moreSwitcher = true;
+            } else {
+                item_desc.setLines(1);
+                item_desc.setMaxLines(10);
+                moreSwitcher = false;
             }
         });
-        btn_order.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                type = 1;
-                function_item();
-            }
+        btn_order.setOnClickListener(v -> {
+            type = 1;
+            showAlert();
         });
-        btn_reserve.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                type = 2;
-                function_item();
+        btn_reserve.setOnClickListener(view -> {
+            type = 2;
+            showAlert();
 
+        });
+        seller_name.setOnClickListener(view -> {
+            if (item_type.equals("pawned")) {
+                Intent to_prof = new Intent(Pawned_Info.this, RePawner_Profile.class);
+                to_prof.putExtra("user_id", seller_id);
+                startActivity(to_prof);
+            } else {
+                Intent to_prof = new Intent(Pawned_Info.this, Pawnshop_Page.class);
+                to_prof.putExtra("user_id", seller_id);
+                startActivity(to_prof);
             }
+        });
+        toolbar.setNavigationOnClickListener(v -> {
+            // perform whatever you want on back arrow click
+            finish();
         });
 
     }
@@ -124,11 +135,12 @@ public class Pawned_Info extends AppCompatActivity {
         cat_products_layout = this.findViewById(R.id.cat_products_layout);
         cat_products = this.findViewById(R.id.cat_products);
         product_image = this.findViewById(R.id.product_image);
+        product_receipt = this.findViewById(R.id.product_receipt);
         see_all_cat_products = this.findViewById(R.id.see_all_cat_products);
         see_all_products = this.findViewById(R.id.see_all_products);
 
         rq = Volley.newRequestQueue(context);
-        cat_products.setText("Other " + Scat_name + " Products");
+
     }
 
     private void assignstuff() {
@@ -139,19 +151,43 @@ public class Pawned_Info extends AppCompatActivity {
         item_price.append("" + item.getPrice());
         item_desc.setText(item.getItem_desc());
         seller_name.setText(item.getSeller_name());
-        item_category.setText(item.getCat_name());
+        Scat_name = item.getCat_name();
+        Log.e("reserved/ordered", String.valueOf(item.getOrdered()));
+        if (item.getReserved() == 1 || item.getOrdered() == 1) {
+            btn_order.setVisibility(View.GONE);
+            btn_reserve.setVisibility(View.GONE);
+        } else {
+            check_requests();
+        }
+        cat_products.setText("Other " + Scat_name + " Products");
+        item_category.setText(Scat_name);
         seller_products.append(item.getSeller_name());
         seller_id = item.getSeller_id();
         item_type = item.getItem_type();
+        reservable = item.getReservable();
+        if (item_type.equals("pawned")) {
+            get_receipt();
+            Picasso.get()
+                    .load(ip.getUrl_image() + receipt)
+                    .memoryPolicy(MemoryPolicy.NO_CACHE)
+                    .networkPolicy(NetworkPolicy.NO_CACHE)
+                    .fit()
+                    .into(product_receipt);
+        } else {
+            product_receipt.setVisibility(View.GONE);
+        }
         item_id = item.getItem_id();
         Picasso.get()
                 .load(ip.getUrl_image() + item.getItem_image())
+                .memoryPolicy(MemoryPolicy.NO_CACHE)
+                .networkPolicy(NetworkPolicy.NO_CACHE)
                 .fit()
                 .into(product_image);
         if (seller_id == session.getID()) {
             btn_order.setVisibility(View.GONE);
             btn_reserve.setVisibility(View.GONE);
         } else {
+            Log.e("reservable", String.valueOf(reservable));
             btn_order.setVisibility(View.VISIBLE);
             if (reservable == 1) {
                 btn_reserve.setVisibility(View.VISIBLE);
@@ -159,38 +195,39 @@ public class Pawned_Info extends AppCompatActivity {
         }
         recycleview_related();
     }
-
-    public void function_item() {
-        if (type == 1) {
-            showAlert();
-
-        } else {
-            StringRequest req = new StringRequest(Request.Method.POST, url, response ->
-                    MDToast.makeText(context, response, MDToast.LENGTH_LONG, MDToast.TYPE_SUCCESS).show(), error -> {
-
-                    }) {
-                protected Map<String, String> getParams() throws AuthFailureError {
-                    Map<String, String> params = new HashMap<>();
-                    params.put("type", String.valueOf(type));
-                    params.put("reserder", "1");
-                    params.put("Product_ID", String.valueOf(item_id));
-                    params.put("User_ID", String.valueOf(session.getID()));
-
-                    return params;
-                }
-            };
-            rq.add(req);
-        }
-    }
+//
+//    public void function_item() {
+//        if (type == 1) {
+//            showAlert();
+//
+//        } else {
+////            StringRequest req = new StringRequest(Request.Method.POST, url, response ->
+////                    MDToast.makeText(context, response, MDToast.LENGTH_LONG, MDToast.TYPE_SUCCESS).show(), error -> {
+////
+////            }) {
+////                protected Map<String, String> getParams() throws AuthFailureError {
+////                    Map<String, String> params = new HashMap<>();
+////                    params.put("type", String.valueOf(type));
+////                    params.put("reserder", "1");
+////                    params.put("Product_ID", String.valueOf(item_id));
+////                    params.put("User_ID", String.valueOf(session.getID()));
+////
+////                    return params;
+////                }
+////            };
+////            rq.add(req);
+//        }
+//    }
 
     public void check_requests() {
         StringRequest req = new StringRequest(Request.Method.POST, url, response -> {
-            if (response.equals("1")) {
+            String exist = response.trim();
+            if (exist.equals("1")) {
                 btn_order.setVisibility(View.GONE);
-            } else if (response.equals("12")) {
+            } else if (exist.equals("12")) {
                 btn_order.setVisibility(View.GONE);
                 btn_reserve.setVisibility(View.GONE);
-            } else if (response.equals("2")) {
+            } else if (exist.equals("2")) {
                 btn_reserve.setVisibility(View.GONE);
 
             }
@@ -209,23 +246,48 @@ public class Pawned_Info extends AppCompatActivity {
         rq.add(req);
     }
 
+    public void get_receipt() {
+        StringRequest req = new StringRequest(Request.Method.POST, url, response -> {
+            receipt = response.trim();
+            Picasso.get()
+                    .load(ip.getUrl_image() + receipt)
+                    .memoryPolicy(MemoryPolicy.NO_CACHE)
+                    .networkPolicy(NetworkPolicy.NO_CACHE)
+                    .fit()
+                    .into(product_receipt);
+        }, error -> {
+
+        }) {
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<>();
+                params.put("get_receipt", "1");
+                params.put("pid", String.valueOf(item_id));
+
+
+                return params;
+            }
+        };
+        rq.add(req);
+    }
+
     public void showAlert() {
         String[] choices = {"paypal", "manual"};
         int item_selected = 0;
-        AlertDialog purdia = new AlertDialog.Builder(context, R.style.RePawnDialog)
+        final android.support.v7.app.AlertDialog purdia = new android.support.v7.app.AlertDialog.Builder(this, android.app.AlertDialog.THEME_DEVICE_DEFAULT_DARK)
+
                 .setTitle("How do you like to make the purchase?")
                 .setSingleChoiceItems(choices, item_selected, (dialogInterface, selectedIndex) ->
                         choice = selectedIndex).setPositiveButton("OK", (dialog, which) -> {
-                            if (choice == 1) {
-                                payment_type = "paypal";
-                            } else {
-                                payment_type = "manual";
-                            }
-                            add_request();
+                    if (choice == 0) {
+                        payment_type = "paypal";
+                    } else {
+                        payment_type = "manual";
+                    }
+                    add_request();
 
-                        }).setNegativeButton("Cancel", (dialogInterface, i) -> {
+                }).setNegativeButton("Cancel", (dialogInterface, i) -> {
 
-                        }).create();
+                }).create();
         purdia.show();
     }
 
@@ -233,7 +295,7 @@ public class Pawned_Info extends AppCompatActivity {
         StringRequest req = new StringRequest(Request.Method.POST, url, response ->
                 MDToast.makeText(context, response, MDToast.LENGTH_LONG, MDToast.TYPE_SUCCESS).show(), error -> {
 
-                }) {
+        }) {
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<>();
                 params.put("type", String.valueOf(type));
@@ -281,12 +343,12 @@ public class Pawned_Info extends AppCompatActivity {
                             ItemList item = new ItemList(items_object.getString("Product_name"),
                                     items_object.getString("Date_Added"), items_object.getString("seller_name")
                                     , items_object.getString("Category_name"), items_object.getString("Product_Type"),
-                                    items_object.getString("Product_image"), items_object.getString("Product_description")
+                                    items_object.getString("product_image"), items_object.getString("Product_description")
                                     , items_object.getInt("Promoted"), items_object.getInt("Reserved"), items_object.getInt("Ordered"), items_object.getInt("Product_ID"),
-                                    items_object.getInt("User_ID"), items_object.getInt("Reservable"), items_object.getInt("Image_ID"),
+                                    items_object.getInt("User_ID"), items_object.getInt("reservable"),
                                     items_object.getLong("Product_price"));
                             Sitemlist.add(item);
-                            if (i > 5) {
+                            if (i > 4) {
                                 see_all_products.setVisibility(View.VISIBLE);
                             }
                         }
@@ -301,11 +363,8 @@ public class Pawned_Info extends AppCompatActivity {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
+        }, error -> {
 
-            }
         }) {
 
             protected Map<String, String> getParams() throws AuthFailureError {
@@ -318,40 +377,37 @@ public class Pawned_Info extends AppCompatActivity {
             }
         };
         rq.add(get_seller_products);
-        StringRequest get_cat_products = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                try {
+        StringRequest get_cat_products = new StringRequest(Request.Method.POST, url, response -> {
+            try {
 
-                    JSONObject result_object = new JSONObject(response);
+                JSONObject result_object = new JSONObject(response);
 
-                    //extracting json array from response string
-                    JSONArray items_array = result_object.getJSONArray("cat_items");
-                    Log.e("jsondata", String.valueOf(items_array));
-                    if (items_array.length() > 0) {
-                        for (int i = 0; i < items_array.length(); i++) {
+                //extracting json array from response string
+                JSONArray items_array = result_object.getJSONArray("cat_items");
+                Log.e("jsondata", String.valueOf(items_array));
+                if (items_array.length() > 0) {
+                    for (int i = 0; i < items_array.length(); i++) {
 
-                            JSONObject items_object = items_array.getJSONObject(i);
-                            ItemList item = new ItemList(items_object.getString("Product_name"),
-                                    items_object.getString("Date_Added"), items_object.getString("seller_name")
-                                    , items_object.getString("Category_name"), items_object.getString("Product_Type"),
-                                    items_object.getString("Product_image"), items_object.getString("Product_description")
-                                    , items_object.getInt("Promoted"), items_object.getInt("Reserved"), items_object.getInt("Ordered"), items_object.getInt("Product_ID"),
-                                    items_object.getInt("User_ID"), items_object.getInt("Reservable"), items_object.getInt("Image_ID"),
-                                    items_object.getLong("Product_price"));
-                            Citemlist.add(item);
-                            if (i > 5) {
-                                see_all_cat_products.setVisibility(View.VISIBLE);
-                            }
+                        JSONObject items_object = items_array.getJSONObject(i);
+                        ItemList item = new ItemList(items_object.getString("Product_name"),
+                                items_object.getString("Date_Added"), items_object.getString("seller_name")
+                                , items_object.getString("Category_name"), items_object.getString("Product_Type"),
+                                items_object.getString("product_image"), items_object.getString("Product_description")
+                                , items_object.getInt("Promoted"), items_object.getInt("Reserved"), items_object.getInt("Ordered"), items_object.getInt("Product_ID"),
+                                items_object.getInt("User_ID"), items_object.getInt("reservable"),
+                                items_object.getLong("Product_price"));
+                        Citemlist.add(item);
+                        if (i > 4) {
+                            see_all_cat_products.setVisibility(View.VISIBLE);
                         }
-                        Citems_adapter.notifyDataSetChanged();
-                    } else {
-                        cat_products_layout.setVisibility(View.GONE);
                     }
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                    Citems_adapter.notifyDataSetChanged();
+                } else {
+                    cat_products_layout.setVisibility(View.GONE);
                 }
+
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
         }, new Response.ErrorListener() {
             @Override
@@ -372,22 +428,5 @@ public class Pawned_Info extends AppCompatActivity {
 
     }
 
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // handle arrow click here
-        if (item.getItemId() == android.R.id.home) {
-            finish();
-        }
-        if (item.getItemId() == R.id.open_gallery) {
-            //   Intent to_gall=new Intent(this,)
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.item_gallery, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
 
 }

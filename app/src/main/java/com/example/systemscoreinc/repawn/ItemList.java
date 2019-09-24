@@ -28,7 +28,7 @@ public class ItemList implements Serializable {
     }
 
     public ItemList(String item_name, String date_added, String seller_name, String cat_name, String item_type, String item_image,
-                    String item_desc,int promoted,int reserved, int ordered, int item_id, int seller_id, int reservable, int image_id,
+                    String item_desc,int promoted,int reserved, int ordered, int item_id, int seller_id, int reservable,
                     long price) {
         this.item_name = item_name;
         this.date_added = date_added;
@@ -43,7 +43,6 @@ public class ItemList implements Serializable {
         this.item_id = item_id;
         this.seller_id = seller_id;
         this.reservable = reservable;
-        this.image_id = image_id;
         this.price = price;
     }
     private int item_id, seller_id,reservable,image_id;

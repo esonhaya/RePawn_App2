@@ -10,6 +10,7 @@ import android.support.design.button.MaterialButton;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.InputType;
 import android.util.Base64;
 import android.view.MenuItem;
 import android.widget.*;
@@ -49,7 +50,7 @@ public class AddPawned extends AppCompatActivity {
     int id_count = 1, rid;
     private static final int INTENT_REQUEST_GET_IMAGES = 13;
     Button btn_images, cat_button;
-    float price;
+    float price=0;
     Context context;
     Session session;
     RequestQueue rq;
@@ -118,7 +119,7 @@ public class AddPawned extends AppCompatActivity {
 
 
     public void add_pawned() {
-        price = Float.valueOf(pprice.getText().toString());
+
         int reserve_id = preserve.getCheckedRadioButtonId();
         String reserve;
         if (reserve_id == R.id.yes)
@@ -138,6 +139,12 @@ public class AddPawned extends AppCompatActivity {
                 textInputLayout.setError(null);
             }
         }
+        if(!pprice.getText().toString().equals("")) {
+            price = Float.valueOf(pprice.getText().toString());
+        }
+        if(pdesc.getText().toString().equals("")){
+            pdesc.setError("Field should not be empty");
+        }
         if (price <= 0) {
             MDToast mdToast = MDToast.makeText(context, "input valid price", MDToast.LENGTH_SHORT, MDToast.TYPE_ERROR);
             mdToast.show();
@@ -154,7 +161,7 @@ public class AddPawned extends AppCompatActivity {
                         pname_layout.setError("name's already been used");
                         //   Toast.makeText(context, pid+"", Toast.LENGTH_SHORT).show();
                     } else
-                        MDToast.makeText(context, "You've sucesfully added an item", MDToast.LENGTH_LONG, MDToast.TYPE_SUCCESS).show();
+                        MDToast.makeText(context, response, MDToast.LENGTH_LONG, MDToast.TYPE_SUCCESS).show();
                     Intent intent = new Intent(AddPawned.this, Pawned.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
@@ -193,11 +200,12 @@ public class AddPawned extends AppCompatActivity {
 
     public void declaring_from_view() {
         addbutton = this.findViewById(R.id.done_add);
-        catbutton = this.findViewById(R.id.cat_button);
+     //   catbutton = this.findViewById(R.id.cat_button);
         pname = this.findViewById(R.id.pname_edit);
         pcat = this.findViewById(R.id.cat_edit);
         pdesc = this.findViewById(R.id.pdesc_edit);
         pprice = this.findViewById(R.id.pprice_edit);
+        pprice.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
         preserve = this.findViewById(R.id.p_reservable);
         pname_layout = this.findViewById(R.id.pname_input);
         add_view = this.findViewById(R.id.add_view);

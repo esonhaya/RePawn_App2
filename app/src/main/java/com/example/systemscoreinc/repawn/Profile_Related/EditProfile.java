@@ -80,12 +80,9 @@ public class EditProfile extends AppCompatActivity {
         get_this();
         get_this_account();
         populate_from_extra();
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // perform whatever you want on back arrow click
-                finish();
-            }
+        toolbar.setNavigationOnClickListener(v -> {
+            // perform whatever you want on back arrow click
+            finish();
         });
     }
 
@@ -106,14 +103,11 @@ public class EditProfile extends AppCompatActivity {
         passi = this.findViewById(R.id.passi);
         opassi = this.findViewById(R.id.opassi);
         npassi = this.findViewById(R.id.npassi);
-        datebutton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        datebutton.setOnClickListener(v -> {
 
-                dpd.getDatePicker().setMaxDate(new Date().getTime());
-                dpd.updateDate(y, m, d);
-                dpd.show();
-            }
+            dpd.getDatePicker().setMaxDate(new Date().getTime());
+            dpd.updateDate(y, m - 1, d);
+            dpd.show();
         });
     }
 
@@ -150,12 +144,13 @@ public class EditProfile extends AppCompatActivity {
         bdate = extra.getString("bdate");
         y = getFromCalendar(bdate, Calendar.YEAR);
         m = getFromCalendar(bdate, Calendar.MONTH);
-        m+=1;
+        m += 1;
         Log.e("monnth", String.valueOf(m));
         d = getFromCalendar(bdate, Calendar.DAY_OF_MONTH);
         fage = getAge(y, m, d);
-        datetext.setText(y + "/" +m + "/" + d);
+        datetext.setText(y + "/" + m + "/" + d);
         Spic = extra.getString("user_image");
+        Log.e("image name", ip.getUrl_image() + Spic);
         Picasso.get()
                 .load(ip.getUrl_image() + Spic)
                 .memoryPolicy(MemoryPolicy.NO_CACHE)
@@ -167,7 +162,7 @@ public class EditProfile extends AppCompatActivity {
                         /* Save the bitmap or do something with it here */
                         bitmap = bmap;
                         // Set it in the ImageView
-                        profile_image.setImageBitmap(bitmap);
+                        profile_image.setImageBitmap(bmap);
                     }
 
                     @Override
@@ -179,7 +174,12 @@ public class EditProfile extends AppCompatActivity {
                     }
                 });
         datepickerstuff();
-
+        Log.e("image bitmap", String.valueOf(bitmap));
+//        Picasso.get()
+//                .load(ip.getUrl_image() + Spic)
+//                .memoryPolicy(MemoryPolicy.NO_CACHE)
+//                .networkPolicy(NetworkPolicy.NO_CACHE)
+//                .into(profile_image);
 
     }
 
@@ -325,7 +325,7 @@ public class EditProfile extends AppCompatActivity {
                 fage = age;
 
             }
-        }, y, m-1, d);
+        }, y, m - 1, d);
     }
 
     private View.OnClickListener edit_prof_listener = new View.OnClickListener() {

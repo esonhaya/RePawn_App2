@@ -78,7 +78,7 @@
                         android:textSize="22sp"/>
 
                 <TextView
-                        android:id="@+id/all_pending_orders"
+                        android:id="@+id/all_cats"
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
                         android:gravity="end"

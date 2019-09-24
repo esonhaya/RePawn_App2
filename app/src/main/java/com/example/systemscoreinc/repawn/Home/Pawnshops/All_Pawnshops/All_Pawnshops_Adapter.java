@@ -12,6 +12,8 @@ import com.example.systemscoreinc.repawn.Home.Pawnshops.PopularList;
 import com.example.systemscoreinc.repawn.IpConfig;
 import com.example.systemscoreinc.repawn.Pawnshop.Pawnshop_Page;
 import com.example.systemscoreinc.repawn.R;
+import com.squareup.picasso.MemoryPolicy;
+import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -56,6 +58,8 @@ public class All_Pawnshops_Adapter extends RecyclerView.Adapter<All_Pawnshops_Vi
         holder.pshop_rate.setRating(rate_avg);
         Picasso.get()
                 .load(ip.getUrl_image() + list.getP_image())
+                .memoryPolicy(MemoryPolicy.NO_CACHE)
+                .networkPolicy(NetworkPolicy.NO_CACHE)
                 .fit()
                 .into(holder.pshop_image);
         holder.linearLayout.setOnClickListener(v -> {

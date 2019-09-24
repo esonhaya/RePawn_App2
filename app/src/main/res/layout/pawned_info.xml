@@ -117,6 +117,22 @@
                           android:id="@+id/item_category"
                           android:textColor="@color/colorGray"
                 />
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                              android:orientation="vertical"
+                >
+                    <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                              android:padding="5dp"
+                              android:layout_marginLeft="10dp"
+                              android:textSize="17sp"
+                              android:text="Receipt"
+                              android:textColor="@color/colorDGray"/>
+                    <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="200dp"
+                            android:adjustViewBounds="true"
+                            android:scaleType="fitXY" app:srcCompat="@drawable/pawnshop_background"
+                            android:id="@+id/product_receipt"/>
+                </LinearLayout>
             </LinearLayout>
             <Button android:id="@+id/btn_order" android:layout_width="match_parent" android:layout_height="wrap_content"
                     android:text="ORDER"

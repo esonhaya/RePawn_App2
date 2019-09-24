@@ -2,13 +2,13 @@
 
 <android.support.design.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
                                               xmlns:app="http://schemas.android.com/apk/res-auto"
-                                              android:layout_width="170dp"
+                                              android:layout_width="150dp"
                                               android:layout_height="190dp"
-                                              app:cardBackgroundColor="@android:color/white"
-                                              app:cardElevation="2dp"
                                               android:padding="5dp"
-                                              app:cardUseCompatPadding="true"
-                                              app:cardCornerRadius="5dp">
+                                              app:cardBackgroundColor="@android:color/white"
+                                              app:cardCornerRadius="5dp"
+                                              app:cardElevation="2dp"
+                                              app:cardUseCompatPadding="true">
 
     <LinearLayout
             android:id="@+id/card_layout"
@@ -28,37 +28,39 @@
                 android:layout_height="match_parent"
                 android:orientation="vertical"
                 android:padding="8dp">
-            <ImageView android:layout_width="match_parent" android:layout_height="90dp"
-                       android:src="@drawable/ring"
-                       android:id="@+id/item_image"/>
+            <ImageView android:id="@+id/item_image" android:layout_width="140dp"
+                       android:layout_height="90dp"
+                       android:adjustViewBounds="true"
+                       android:scaleType="fitXY"
+                       android:src="@drawable/ring"/>
 
             <TextView
                     android:id="@+id/product_title"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:maxLines="1"
                     android:text="Name"
                     android:textColor="@color/colorPrimaryDark"
                     android:textSize="18sp"
-                    android:ellipsize="end"
-                    android:maxLines="1"
             />
             <TextView
                     android:id="@+id/repawner_name"
                     android:layout_width="match_parent" android:layout_height="wrap_content"
-                    android:textColor="@color/colorPrimary"
-                    android:textSize="16sp"
                     android:ellipsize="end"
                     android:maxLines="1"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="16sp"
 
             />
 
-            <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
-                      android:id="@+id/item_price"
+            <TextView android:id="@+id/item_price" android:layout_width="match_parent"
+                      android:layout_height="wrap_content"
+                      android:layout_marginTop="3dp"
+                      android:gravity="end"
+                      android:text="₱6000.00"
                       android:textColor="@color/colorPrimary"
                       android:textSize="18sp"
-                      android:gravity="end"
-                      android:layout_marginTop="3dp"
-                      android:text="₱6000.00"
                       android:textStyle="bold"/>
         </LinearLayout>
 

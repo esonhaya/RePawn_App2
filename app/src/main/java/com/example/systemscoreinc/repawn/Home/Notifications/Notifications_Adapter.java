@@ -20,6 +20,8 @@ import com.example.systemscoreinc.repawn.Orders.Orders;
 import com.example.systemscoreinc.repawn.Profile_Related.RePawner_Profile;
 import com.example.systemscoreinc.repawn.R;
 import com.example.systemscoreinc.repawn.Session;
+import com.squareup.picasso.MemoryPolicy;
+import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 import com.valdesekamdem.library.mdtoast.MDToast;
 
@@ -66,6 +68,8 @@ public class Notifications_Adapter extends RecyclerView.Adapter<Notifications_Vi
         holder.sell_name.setText(nlist.getMessage());
         Picasso.get()
                 .load(ip.getUrl_image() + nlist.getNotif_image())
+                .memoryPolicy(MemoryPolicy.NO_CACHE)
+                .networkPolicy(NetworkPolicy.NO_CACHE)
                 .fit()
                 .into(holder.sell_image);
         try {

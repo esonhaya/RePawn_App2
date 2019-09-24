@@ -81,15 +81,12 @@ public class Pawned_Items_Adapter extends RecyclerView.Adapter<My_Pawned_ViewHol
         SimpleDateFormat convetDateFormat = new SimpleDateFormat("MM/dd/yyyy ");
         String sdate = convetDateFormat.format(date);
         holder.Date_Posted.setText("posted on " + sdate);
-        holder.linearLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent pinfo = new Intent(Ctx, MyPawnedInfo.class);
-                pinfo.putExtra("item", item);
+        holder.linearLayout.setOnClickListener(view -> {
+            Intent pinfo = new Intent(Ctx, MyPawnedInfo.class);
+            pinfo.putExtra("item", item);
 
-                Ctx.startActivity(pinfo);
+            Ctx.startActivity(pinfo);
 
-            }
         });
 
     }

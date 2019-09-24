@@ -72,40 +72,34 @@ public class Pawned extends AppCompatActivity {
 
 
     private void addPawnedRV() {
-        StringRequest preq = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                try {
-                    Log.e("response", response);
-                    JSONObject pawnedobject = new JSONObject(response);
-                    //extracting json array from response string
-                    JSONArray item_array = pawnedobject.getJSONArray("seller_items");
-                    if (item_array.length() > 0) {
-                        for (int i = 0; i < item_array.length(); i++) {
-                            JSONObject items_object = item_array.getJSONObject(i);
-                            ItemList item = new ItemList(items_object.getString("Product_name"),
-                                    items_object.getString("Date_Added"), items_object.getString("seller_name")
-                                    , items_object.getString("Category_name"), items_object.getString("Product_Type"),
-                                    items_object.getString("Product_image"), items_object.getString("Product_description")
-                                    , items_object.getInt("Promoted"), items_object.getInt("Reserved"), items_object.getInt("Ordered"), items_object.getInt("Product_ID"),
-                                    session.getID(), items_object.getInt("Reservable"), items_object.getInt("Image_ID"),
-                                    items_object.getLong("Product_price"));
-                            myitems.add(item);
+        StringRequest preq = new StringRequest(Request.Method.POST, url, response -> {
+            try {
+                Log.e("response", response);
+                JSONObject pawnedobject = new JSONObject(response);
+                //extracting json array from response string
+                JSONArray item_array = pawnedobject.getJSONArray("seller_items");
+                if (item_array.length() > 0) {
+                    for (int i = 0; i < item_array.length(); i++) {
+                        JSONObject items_object = item_array.getJSONObject(i);
+                        ItemList item = new ItemList(items_object.getString("Product_name"),
+                                items_object.getString("Date_Added"), items_object.getString("seller_name")
+                                , items_object.getString("Category_name"), items_object.getString("Product_Type"),
+                                items_object.getString("product_image"), items_object.getString("Product_description")
+                                , items_object.getInt("Promoted"), items_object.getInt("Reserved"), items_object.getInt("Ordered"), items_object.getInt("Product_ID"),
+                                session.getID(), items_object.getInt("reservable"),
+                                items_object.getLong("Product_price"));
+                        myitems.add(item);
 
-                        }
-                        pawned_adapter.notifyDataSetChanged();
                     }
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                    pawned_adapter.notifyDataSetChanged();
                 }
-
-
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
 
-            }
+
+        }, error -> {
+
         }) {
 
             protected Map<String, String> getParams() throws AuthFailureError {

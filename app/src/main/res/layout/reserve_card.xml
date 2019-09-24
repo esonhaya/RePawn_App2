@@ -72,6 +72,16 @@
                     android:textColor="@color/colorDGray"
                     android:textSize="18sp" />
 
+                <TextView
+                        android:id="@+id/payment_type"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="30dp"
+                        android:padding="5dp"
+                        android:text="Payment Type:"
+                        android:textColor="@color/colorDGray"
+                        android:textSize="18sp" />
+
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>
