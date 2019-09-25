@@ -1,6 +1,8 @@
 package com.example.systemscoreinc.repawn.Items.Pending_Request;
 
-public class Pending_Request_List {
+import java.io.Serializable;
+
+public class Pending_Request_List implements Serializable {
     String user_name,request_type,request_status,request_started,user_image,request_id,request_details_id,user_id,payment_type,
     product_id;
 

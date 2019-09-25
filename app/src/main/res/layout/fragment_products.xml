@@ -1,19 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".Home.Search.Products">
+             xmlns:tools="http://schemas.android.com/tools"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             tools:context=".Home.Search.Products">
 
     <!-- TODO: Update blank fragment layout -->
-    <!--<com.jaredrummler.materialspinner.MaterialSpinner-->
-        <!--android:id="@+id/spinner"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"/>-->
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/prod_view"
-        android:layout_marginTop="50dp"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                  android:orientation="vertical"
+    >
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                  android:text="Price filter" android:textSize="18sp"/>
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        >
+            <EditText android:id="@+id/min_price" android:layout_width="wrap_content"
+                      android:layout_height="wrap_content"
+                      android:hint="Minimum price"
+                      android:textColor="@color/colorPrimary" android:textColorHint="@color/colorDGray"/>
+            <EditText android:id="@+id/max_price" android:layout_width="wrap_content"
+                      android:layout_height="wrap_content"
+                      android:hint="Maximum price"
+                      android:textColor="@color/colorPrimary" android:textColorHint="@color/colorDGray"/>
+            <Button android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="Filter"
+                    android:id="@+id/filter_price"
+            />
+        </LinearLayout>
+        <com.jaredrummler.materialspinner.MaterialSpinner
+                android:id="@+id/spinner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+        <android.support.v7.widget.RecyclerView
+                android:id="@+id/prod_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+    </LinearLayout>
 </FrameLayout>

@@ -13,12 +13,16 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.text.InputType;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import android.widget.Button;
+import android.widget.EditText;
 import com.example.systemscoreinc.repawn.Home.Home_Navigation1;
+import com.example.systemscoreinc.repawn.Home.Items.All_Items.All_Items_Adapter;
 import com.example.systemscoreinc.repawn.Home.Items.Home_Items_Adapter;
 import com.example.systemscoreinc.repawn.Home.Pawnshops.All_Pawnshops.All_Pawnshops_Adapter;
 import com.example.systemscoreinc.repawn.Home.Pawnshops.PopularList;
@@ -27,6 +31,7 @@ import com.example.systemscoreinc.repawn.Home.RePawners.RePawnerList;
 import com.example.systemscoreinc.repawn.ItemList;
 import com.example.systemscoreinc.repawn.R;
 import com.jaredrummler.materialspinner.MaterialSpinner;
+import com.valdesekamdem.library.mdtoast.MDToast;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -41,6 +46,7 @@ public class Search extends AppCompatActivity implements SearchView.OnQueryTextL
     List<ItemList> itemlist;
     List<RePawnerList> replist;
     List<PopularList> poplist;
+    All_Items_Adapter aia;
     All_Pawnshops_Adapter hpa;
     All_RePawners_Adapter ra;
     Home_Items_Adapter hia;
@@ -50,8 +56,11 @@ public class Search extends AppCompatActivity implements SearchView.OnQueryTextL
     RecyclerView pawn_view;
     Bundle extra;
     Intent i;
+    Long min_price, max_price;
     MaterialSpinner rs;
     MaterialSpinner ps;
+    Button filter_price;
+    EditText min, max;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,6 +111,7 @@ public class Search extends AppCompatActivity implements SearchView.OnQueryTextL
     public boolean onQueryTextChange(String s) {
         ra.filter(s);
         hpa.filter(s);
+        aia.filter(s);
         return false;
     }
 
@@ -138,11 +148,48 @@ public class Search extends AppCompatActivity implements SearchView.OnQueryTextL
     public void getProducts(View rootView) {
         itemlist = (ArrayList<ItemList>) i.getSerializableExtra("products");
         Log.e("list", String.valueOf(itemlist));
-        hia = new Home_Items_Adapter(context, itemlist);
+        aia = new All_Items_Adapter(context, itemlist);
         prod_view = rootView.findViewById(R.id.prod_view);
         prod_view.setHasFixedSize(true);
         prod_view.setLayoutManager(new GridLayoutManager(context, 1));
-        prod_view.setAdapter(hia);
+        prod_view.setAdapter(aia);
+
+        rs = rootView.findViewById(R.id.spinner);
+        rs.setItems("Price high to low", "Price low to high");
+        rs.setOnItemSelectedListener((view, position, id, item) -> {
+            switch (position) {
+                case 0:
+                    Collections.sort(itemlist, ItemList.PriceH);
+                    aia.notifyDataSetChanged();
+                    break;
+                case 1:
+                    Collections.sort(itemlist, ItemList.PriceL);
+                    aia.notifyDataSetChanged();
+                    break;
+            }
+
+        });
+        filter_price = rootView.findViewById(R.id.filter_price);
+        max = rootView.findViewById(R.id.max_price);
+        min = rootView.findViewById(R.id.min_price);
+        max.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+        min.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+        filter_price.setOnClickListener(view -> {
+            if (max.getText().toString().isEmpty()) {
+                max_price = 0L;
+
+            } else {
+                Log.e("max",max.getText().toString());
+                max_price = Long.valueOf(max.getText().toString());
+            }
+            if (min.getText().toString().isEmpty()) {
+                min_price = 0L;
+            }else {
+                min_price = Long.valueOf(min.getText().toString());
+            }
+            aia.price_filter(min_price, max_price);
+        });
+
     }
 
     public void getRePawners(View rootView) {

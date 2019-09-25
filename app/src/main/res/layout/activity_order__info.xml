@@ -271,11 +271,12 @@
                         android:id="@+id/reservation_payment"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="10dp"
+                        android:layout_marginLeft="30dp"
                         android:padding="5dp"
-                        android:text="Date Requested:"
+                        android:text="Payment Type:"
                         android:textColor="@color/colorDGray"
-                        android:textSize="18sp"/>
+                        android:textColorLink="@color/colorDGray"
+                        android:textSize="18sp" />
             </LinearLayout>
 
             <LinearLayout

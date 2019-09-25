@@ -55,9 +55,8 @@ public class Order_History_Adapter extends RecyclerView.Adapter<Order_History_Vi
         holder.date_accepted.append(convert_date(list.getDate_accepted()));
         if (!list.getDate_end().equals("not yet")) {
             holder.date_ended.append(convert_date(list.getDate_end()));
-        } else {
-            holder.date_ended.append(list.getDate_end());
         }
+        holder.date_ended.append(list.getDate_end());
         holder.payment_type.append(list.getPay_type());
         holder.orderer_name.setOnClickListener(view -> {
             Intent to_prof = new Intent(Ctx, RePawner_Profile.class);

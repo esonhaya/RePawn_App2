@@ -1,6 +1,9 @@
 package com.example.systemscoreinc.repawn;
 
+import com.example.systemscoreinc.repawn.Home.Pawnshops.PopularList;
+
 import java.io.Serializable;
+import java.util.Comparator;
 
 public class ItemList implements Serializable {
 
@@ -87,6 +90,6 @@ public class ItemList implements Serializable {
     public long getPrice() {
         return price;
     }
-
-
+    public static Comparator<ItemList> PriceH = (one, other) -> (int) (other.getPrice() - one.getPrice());
+    public static Comparator<ItemList> PriceL = (one, other) -> (int) (one.getPrice() - other.getPrice());
 }

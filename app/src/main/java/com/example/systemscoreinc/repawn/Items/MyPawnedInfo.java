@@ -774,7 +774,7 @@ public class MyPawnedInfo extends AppCompatActivity {
                                 item.getString("Date_Sent"), item.getString("user_image"),
                                 item.getString("Reservation_Product_ID"),
                                 item.getString("Reservation_Details_ID"), item.getString("User_ID"),
-                                "reservation", String.valueOf(pid));
+                                item.getString("Payment_Type"), String.valueOf(pid));
                         reserve_list.add(list);
                         if (i < 2) {
                             reserve_list_min.add(list);

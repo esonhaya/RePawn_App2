@@ -67,7 +67,7 @@ public class RePawner_Profile extends AppCompatActivity {
     Bundle extra;
     Session session;
     Context context;
-    int user_id, rating, update_feedback;
+    int user_id, rating, update_feedback=0;
     String if_follow;
     RequestQueue rq;
     Home_Items_Adapter items_adapter;
@@ -442,7 +442,6 @@ public class RePawner_Profile extends AppCompatActivity {
                     feedi.setVisibility(View.VISIBLE);
                     btn_cancel.setVisibility(View.VISIBLE);
                     btn_submit.setVisibility(View.VISIBLE);
-                    btn_delete.setVisibility(View.VISIBLE);
                     feede.setText(feedback_content.getText());
                     Log.e("feedback", feedback);
                     if (update_feedback == 1) {

@@ -1,9 +1,6 @@
 package com.example.systemscoreinc.repawn.Home;
 
-import android.app.AlertDialog;
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
+import android.app.*;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -13,7 +10,9 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.location.LocationManager;
+import android.media.RingtoneManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.design.widget.NavigationView;
@@ -63,6 +62,8 @@ import com.glide.slider.library.SliderLayout;
 import com.glide.slider.library.SliderTypes.BaseSliderView;
 import com.glide.slider.library.SliderTypes.TextSliderView;
 import com.glide.slider.library.Tricks.ViewPagerEx;
+import com.squareup.picasso.MemoryPolicy;
+import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 import org.json.JSONArray;
@@ -97,9 +98,11 @@ public class Home_Navigation1 extends AppCompatActivity implements BaseSliderVie
     Home_Items_Adapter items_adapter;
     Home_Cat_Adapter cats_adapter;
     RePawner_Adapter rep_adapter;
+    Bitmap notif_map;
     RequestQueue rq;
     Bitmap largeIcon;
     PendingIntent pendingIntent;
+     Intent to_page;
     TextView notifView;
     int notif_id = 1;
     public static final String NOTIFICATION_CHANNEL_ID = "channel_id";
@@ -205,7 +208,7 @@ public class Home_Navigation1 extends AppCompatActivity implements BaseSliderVie
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
 
 //        mBuilder.setContentIntent(pendingIntent);
-        Notification notify=new Notification.Builder
+        Notification notify = new Notification.Builder
                 (getApplicationContext()).setContentTitle("repawn").setContentText("sample").
                 setContentTitle("sample").setSmallIcon(R.mipmap.rp_launcher_round).build();
 
@@ -308,21 +311,60 @@ public class Home_Navigation1 extends AppCompatActivity implements BaseSliderVie
         for (Notifications_List cur : new_notif) {
             // use currInstance
             Log.e("notification name", cur.getMessage());
+
             if (cur.getType() == 1) {
-                Intent notifyIntent = new Intent(this, RePawner_Profile.class);
-                notifyIntent.putExtra("user_id", cur.getLink_id());
-                notifyIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
-                        | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                pendingIntent = PendingIntent.getActivity(this, notif_id, notifyIntent, 0);
+                to_page = new Intent(context, RePawner_Profile.class);
+                to_page.putExtra("user_id", cur.getLink_id());
+            } else if (cur.getType() == 2) {
+                to_page = new Intent(context, Orders.class);
+
+            } else if (cur.getType() == 3) {
+                to_page = new Intent(context, Orders.class);
+            } else if (cur.getType() == 4) {
+                to_page = new Intent(context, Pawned.class);
+            } else if (cur.getType() == 5) {
+                to_page = new Intent(context, RePawner_Profile.class);
+                to_page.putExtra("user_id", cur.getLink_id());
+            } else if (cur.getType() == 6) {
+                to_page = new Intent(context, RePawner_Profile.class);
+                to_page.putExtra("user_id", session.getID());
             }
-            Notification n = new Notification.Builder(this)
+          pendingIntent = PendingIntent.getActivity(this, 0, to_page, 0);
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), "M_CH_ID");
+            builder.setSmallIcon(R.mipmap.rp_launcher_round)
                     .setContentTitle("RePawn")
                     .setContentText(cur.getMessage())
-                    .setSmallIcon(R.mipmap.rp_launcher_round)
-                    .setContentIntent(pendingIntent).build();
+                    .setAutoCancel(true)
+                    .setContentIntent(pendingIntent)
+                    .setDefaults(NotificationCompat.DEFAULT_ALL);
+            Picasso.get().load(cur.getNotif_image()).into(new Target() {
+                @Override
+                public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                    notif_map = bitmap;
+                }
 
+                @Override
+                public void onBitmapFailed(Exception e, Drawable errorDrawable) {
 
-            notificationManager.notify(notif_id, n);
+                }
+
+                @Override
+                public void onPrepareLoad(Drawable placeHolderDrawable) {
+                }
+            });
+
+            builder.setLargeIcon(notif_map);
+
+            Uri path = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+            builder.setSound(path);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                String channelId = "YOUR CHANNEL_ID";
+                NotificationChannel channel = new NotificationChannel(channelId, "Channel something", NotificationManager.IMPORTANCE_DEFAULT);
+                notificationManager.createNotificationChannel(channel);
+                builder.setChannelId(channelId);
+            }
+            notificationManager.notify(notif_id, builder.build());
             notif_id++;
         }
 

@@ -7,6 +7,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -88,6 +89,7 @@ public class Pending_Request_Adapter extends RecyclerView.Adapter<Pending_Reques
         holder.request_name.setText(list.getUser_name());
         holder.request_date.setText(sdate);
         pay_type = list.getPayment_type();
+     Log.e("payment",list.getPayment_type());
         holder.payment_type.setText(pay_type);
         if (pay_type.equals("manual")) {
             holder.payment_type.setTextColor(ContextCompat.getColor(Ctx, R.color.colorDGray));

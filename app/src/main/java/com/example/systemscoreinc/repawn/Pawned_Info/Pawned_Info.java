@@ -339,7 +339,6 @@ public class Pawned_Info extends AppCompatActivity {
                     for (int i = 0; i < items_array.length(); i++) {
 
                         JSONObject items_object = items_array.getJSONObject(i);
-                        if (item_type.equals("pawned")) {
                             ItemList item = new ItemList(items_object.getString("Product_name"),
                                     items_object.getString("Date_Added"), items_object.getString("seller_name")
                                     , items_object.getString("Category_name"), items_object.getString("Product_Type"),
@@ -351,7 +350,6 @@ public class Pawned_Info extends AppCompatActivity {
                             if (i > 4) {
                                 see_all_products.setVisibility(View.VISIBLE);
                             }
-                        }
 
 
                     }

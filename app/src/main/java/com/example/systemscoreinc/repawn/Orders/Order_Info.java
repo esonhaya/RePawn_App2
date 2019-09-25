@@ -520,14 +520,14 @@ public class Order_Info extends AppCompatActivity {
                         String ds = info.getString("Date_Sent");
                         String da = info.getString("Date_Accepted");
                         if (ds.isEmpty()) {
-                            date_sent.append("not yet");
+                            reservation_sent.append("not yet");
                         } else {
-                            date_sent.append(date_formatter(ds));
+                            reservation_sent.append(date_formatter(ds));
                         }
                         if (da.isEmpty()) {
-                            date_accepted.append("not yet");
+                            reservation_start_date.append("not yet");
                         } else {
-                            date_accepted.append(date_formatter(da));
+                            reservation_start_date.append(date_formatter(da));
                         }
                         if (info.getString("Date_End").isEmpty()) {
 
@@ -536,8 +536,9 @@ public class Order_Info extends AppCompatActivity {
                             da = info.getString("Date_End");
                             date_order_ended.append(date_formatter(da));
                         }
-
+                        String stat = info.getString("Status");
                         spayment_type = info.getString("Payment_Type");
+                        reservation_payment.append(spayment_type);
                         reserve_id = info.getString("Reservation_Details_ID");
                         details_id = Integer.valueOf(reserve_id);
                         int cancelled = info.getInt("cancelled");
@@ -545,8 +546,10 @@ public class Order_Info extends AppCompatActivity {
                             pending_message.setText("Cancelled");
                             pending_message.setVisibility(View.VISIBLE);
                         } else {
+                            if (stat.equals("accepted")) {
+                                order_now.setVisibility(View.VISIBLE);
+                            }
                             cancel_request.setVisibility(View.VISIBLE);
-                            order_now.setVisibility(View.VISIBLE);
                         }
                     }
                     reserve_info_layout.setVisibility(View.VISIBLE);
