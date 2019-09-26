@@ -8,7 +8,7 @@ import java.util.Comparator;
 public class ItemList implements Serializable {
 
     private String item_name,date_added,seller_name, cat_name,item_type, item_image,item_desc;
-    private int reserved,ordered,promoted;
+    private int reserved,ordered,promoted,active;
 
     public int getPromoted() {
         return promoted;
@@ -30,9 +30,13 @@ public class ItemList implements Serializable {
         return image_id;
     }
 
+    public int getActive() {
+        return active;
+    }
+
     public ItemList(String item_name, String date_added, String seller_name, String cat_name, String item_type, String item_image,
-                    String item_desc,int promoted,int reserved, int ordered, int item_id, int seller_id, int reservable,
-                    long price) {
+                    String item_desc, int promoted, int reserved, int ordered, int item_id, int seller_id, int reservable,
+                    long price, int active) {
         this.item_name = item_name;
         this.date_added = date_added;
         this.seller_name = seller_name;
@@ -47,6 +51,7 @@ public class ItemList implements Serializable {
         this.seller_id = seller_id;
         this.reservable = reservable;
         this.price = price;
+        this.active=active;
     }
     private int item_id, seller_id,reservable,image_id;
     private long price;

@@ -17,6 +17,7 @@ import com.android.volley.*;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.systemscoreinc.repawn.IpConfig;
+import com.example.systemscoreinc.repawn.Orders.Orders;
 import com.example.systemscoreinc.repawn.R;
 import com.example.systemscoreinc.repawn.Session;
 
@@ -133,6 +134,12 @@ public class ConfirmationActivity extends AppCompatActivity {
         // handle arrow click here
         if (item.getItemId() == R.id.conf) {
             Intent to_prof = new Intent(ConfirmationActivity.this, Pawned.class);
+            to_prof.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(to_prof);
+            finish();
+        }
+        if(extra.getString("pay_order")!=null){
+            Intent to_prof = new Intent(ConfirmationActivity.this, Orders.class);
             to_prof.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(to_prof);
             finish();

@@ -278,7 +278,7 @@ public class RePawner_Profile extends AppCompatActivity {
                                 items_object.getString("product_image"), items_object.getString("Product_description")
                                 , items_object.getInt("Promoted"), items_object.getInt("Reserved"), items_object.getInt("Ordered"), items_object.getInt("Product_ID"),
                                 session.getID(), items_object.getInt("reservable"),
-                                items_object.getLong("Product_price"));
+                                items_object.getLong("Product_price"),items_object.getInt("active"));
                         if (i > 5) {
                             see_all_products.setVisibility(View.VISIBLE);
                         }

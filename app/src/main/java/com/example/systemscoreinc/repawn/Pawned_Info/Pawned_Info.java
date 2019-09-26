@@ -46,7 +46,7 @@ public class Pawned_Info extends AppCompatActivity {
     private Toolbar toolbar;
     private Button btn_order, btn_reserve;
     private TextView item_name, item_desc, seller_name, item_price, item_category, seller_products, cat_products;
-    private LinearLayout seller_products_layout, cat_products_layout;
+    private LinearLayout seller_products_layout, cat_products_layout, receipt_layout;
     ImageView product_image, see_all_cat_products, see_all_products, product_receipt;
     Bundle extras;
     Session session;
@@ -138,7 +138,7 @@ public class Pawned_Info extends AppCompatActivity {
         product_receipt = this.findViewById(R.id.product_receipt);
         see_all_cat_products = this.findViewById(R.id.see_all_cat_products);
         see_all_products = this.findViewById(R.id.see_all_products);
-
+        receipt_layout = this.findViewById(R.id.receipt_layout);
         rq = Volley.newRequestQueue(context);
 
     }
@@ -167,14 +167,8 @@ public class Pawned_Info extends AppCompatActivity {
         reservable = item.getReservable();
         if (item_type.equals("pawned")) {
             get_receipt();
-            Picasso.get()
-                    .load(ip.getUrl_image() + receipt)
-                    .memoryPolicy(MemoryPolicy.NO_CACHE)
-                    .networkPolicy(NetworkPolicy.NO_CACHE)
-                    .fit()
-                    .into(product_receipt);
         } else {
-            product_receipt.setVisibility(View.GONE);
+            receipt_layout.setVisibility(View.GONE);
         }
         item_id = item.getItem_id();
         Picasso.get()
@@ -292,6 +286,7 @@ public class Pawned_Info extends AppCompatActivity {
     }
 
     private void add_request() {
+        Log.e("product", String.valueOf(item_id));
         StringRequest req = new StringRequest(Request.Method.POST, url, response ->
                 MDToast.makeText(context, response, MDToast.LENGTH_LONG, MDToast.TYPE_SUCCESS).show(), error -> {
 
@@ -339,17 +334,17 @@ public class Pawned_Info extends AppCompatActivity {
                     for (int i = 0; i < items_array.length(); i++) {
 
                         JSONObject items_object = items_array.getJSONObject(i);
-                            ItemList item = new ItemList(items_object.getString("Product_name"),
-                                    items_object.getString("Date_Added"), items_object.getString("seller_name")
-                                    , items_object.getString("Category_name"), items_object.getString("Product_Type"),
-                                    items_object.getString("product_image"), items_object.getString("Product_description")
-                                    , items_object.getInt("Promoted"), items_object.getInt("Reserved"), items_object.getInt("Ordered"), items_object.getInt("Product_ID"),
-                                    items_object.getInt("User_ID"), items_object.getInt("reservable"),
-                                    items_object.getLong("Product_price"));
-                            Sitemlist.add(item);
-                            if (i > 4) {
-                                see_all_products.setVisibility(View.VISIBLE);
-                            }
+                        ItemList item = new ItemList(items_object.getString("Product_name"),
+                                items_object.getString("Date_Added"), items_object.getString("seller_name")
+                                , items_object.getString("Category_name"), items_object.getString("Product_Type"),
+                                items_object.getString("product_image"), items_object.getString("Product_description")
+                                , items_object.getInt("Promoted"), items_object.getInt("Reserved"), items_object.getInt("Ordered"), items_object.getInt("Product_ID"),
+                                items_object.getInt("User_ID"), items_object.getInt("reservable"),
+                                items_object.getLong("Product_price"),items_object.getInt("active"));
+                        Sitemlist.add(item);
+                        if (i > 4) {
+                            see_all_products.setVisibility(View.VISIBLE);
+                        }
 
 
                     }
@@ -393,7 +388,7 @@ public class Pawned_Info extends AppCompatActivity {
                                 items_object.getString("product_image"), items_object.getString("Product_description")
                                 , items_object.getInt("Promoted"), items_object.getInt("Reserved"), items_object.getInt("Ordered"), items_object.getInt("Product_ID"),
                                 items_object.getInt("User_ID"), items_object.getInt("reservable"),
-                                items_object.getLong("Product_price"));
+                                items_object.getLong("Product_price"),items_object.getInt("active"));
                         Citemlist.add(item);
                         if (i > 4) {
                             see_all_cat_products.setVisibility(View.VISIBLE);

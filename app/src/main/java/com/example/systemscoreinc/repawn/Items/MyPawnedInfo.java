@@ -100,13 +100,13 @@ public class MyPawnedInfo extends AppCompatActivity {
     TextView pname, pdesc, pprice, pcat, daysleft, promhistory, all_pending_orders, all_pending_reserve, nop, nrp;
     LinearLayout reserve_layout, order_layout, payment_layout, order_info_layout, reserve_info_layout;
     TextView paypal_id, pay_amount, Date_paid;
-    TextView saoh, sarh;
+    TextView saoh, sarh, order_info;
     RecyclerView rec_orders, rec_reserve, order_history, reserve_history;
     String spname, spdesc, spcat, url = ip.getUrl() + "pawned_info.php", item_image;
     Long spprice;
-    int pid, res;
+    int pid, res, active;
     Button seller_confirm;
-    int amount, choice, order_details_id, seller_confirmed;
+    int amount, choice, order_details_id, seller_confirmed, buyer_confirmed;
     int reserved, ordered, promoted;
     int promotable, editable = 0;
     int item_selected;
@@ -159,6 +159,7 @@ public class MyPawnedInfo extends AppCompatActivity {
         spprice = item.getPrice();
         item_image = item.getItem_image();
         promoted = item.getPromoted();
+        active = item.getActive();
         if (item.getOrdered() == 0 && item.getReserved() == 0) {
             editable = 1;
         }
@@ -168,20 +169,6 @@ public class MyPawnedInfo extends AppCompatActivity {
                 .networkPolicy(NetworkPolicy.NO_CACHE)
                 .fit()
                 .into(product_image);
-//        Glide.with(this)
-//                .asBitmap()
-//                .load(ip.getUrl_image()+Simage)
-//                .into(new CustomTarget<Bitmap>() {
-//                    @Override
-//                    public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
-//                        bimage = resource;
-//                        product_image.setImageBitmap(resource);
-//                    }
-//
-//                    @Override
-//                    public void onLoadCleared(@Nullable Drawable placeholder) {
-//                    }
-//                });
         get_receipt();
         pname.setText(spname);
         pprice.setText("₱ " + spprice);
@@ -510,21 +497,17 @@ public class MyPawnedInfo extends AppCompatActivity {
         nop = this.findViewById(R.id.no_orders_prompt);
         nrp = this.findViewById(R.id.no_reserve_prompt);
         nop.setOnClickListener(all_click);
+        order_info = this.findViewById(R.id.order_info);
         seller_confirm.setOnClickListener(view -> {
-            StringRequest request = new StringRequest(Request.Method.POST, url, response ->
-                    MDToast.makeText(context, response, MDToast.LENGTH_LONG, MDToast.TYPE_SUCCESS).show(), error -> {
+            android.support.v7.app.AlertDialog prom = new android.support.v7.app.AlertDialog.Builder(context, AlertDialog.THEME_DEVICE_DEFAULT_DARK)
+                    .setTitle("Are you sure you have received payment already?")
+                    .setPositiveButton("Yes", (dialog, which) -> confirm_pay())
+                    .setNegativeButton("No", (dialog, which) -> {
 
-            }) {
-                @Override
-                protected Map<String, String> getParams() throws AuthFailureError {
-                    Map<String, String> params = new HashMap<>();
-                    params.put("odi", String.valueOf(order_details_id));
-                    params.put("pid", String.valueOf(pid));
-                    params.put("confirm_transaction_seller", "1");
-                    return params;
-                }
-            };
-            rq.add(request);
+                    })
+                    .create();
+            prom.show();
+
         });
         saoh.setOnClickListener(view -> {
             Intent to_history = new Intent(context, Order_History.class);
@@ -539,6 +522,27 @@ public class MyPawnedInfo extends AppCompatActivity {
         });
 
 
+    }
+
+    public void confirm_pay() {
+        StringRequest request = new StringRequest(Request.Method.POST, url, response -> {
+            MDToast.makeText(context, response, MDToast.LENGTH_LONG, MDToast.TYPE_SUCCESS).show();
+            finish();
+            startActivity(getIntent());
+            overridePendingTransition(0, 0);
+        }, error -> {
+
+        }) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<>();
+                params.put("odi", String.valueOf(order_details_id));
+                params.put("pid", String.valueOf(pid));
+                params.put("confirm_transaction_seller", "1");
+                return params;
+            }
+        };
+        rq.add(request);
     }
 
     private void get_order_details() {
@@ -558,17 +562,30 @@ public class MyPawnedInfo extends AppCompatActivity {
                                 , info.getString("Payment_Type"), info.getString("Date_End"),
                                 info.getString("Date_Accepted"), info.getString("buyer_name"));
                         ohl.add(list);
-                        if (info.getInt("active") == 1) {
                             seller_confirmed = info.getInt("Seller_confirmation");
-                            spayment_type = info.getString("Payment_Type");
+                            buyer_confirmed = info.getInt("Buyer_confirmation");
+                        if (info.getInt("active") == 1) {
                             ohl_current.add(list);
-                            order_details_id = info.getInt("Order_Details_ID");
                             Visibility_All();
                         }
+                        if (active==0 && seller_confirmed == 1 && buyer_confirmed == 1) {
+                            spayment_type = info.getString("Payment_Type");
+                            order_details_id = info.getInt("Order_Details_ID");
+                            nop.setText("Ownership transferred succesfully");
+                            nop.setVisibility(View.VISIBLE);
+                            nop.setTextColor(getResources().getColor(R.color.colorPrimary));
+                            Visibility_All();
+                        }
+                        if (seller_confirmed == 1 && buyer_confirmed == 0) {
+                            order_info.setText("Awaiting Buyer Confirmation");
+                            order_info.setVisibility(View.VISIBLE);
+                        }
+
                         if (i == 0 && info.getInt("active") == 0) {
                             nop.setVisibility(View.VISIBLE);
                             saoh.setVisibility(View.VISIBLE);
                         }
+
                     }
                     oha.notifyDataSetChanged();
 
@@ -652,12 +669,14 @@ public class MyPawnedInfo extends AppCompatActivity {
                         paypal_id.append(info.getString("Paypal_Payment_ID"));
                         pay_amount.append(info.getString("Amount"));
                         Date_paid.append(info.getString("Date_Paid"));
-                        if (seller_confirmed != 1) {
+                        if (seller_confirmed != 1&&active==1) {
                             seller_confirm.setVisibility(View.VISIBLE);
                         }
                     }
 
                 } else {
+                    order_info.setVisibility(View.VISIBLE);
+                    //  order_info.setText("Ara");
                     payment_layout.setVisibility(View.GONE);
                     seller_confirm.setVisibility(View.GONE);
 
@@ -671,7 +690,7 @@ public class MyPawnedInfo extends AppCompatActivity {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<>();
-                params.put("order_details_id", String.valueOf(order_details_id));
+                params.put("oid", String.valueOf(order_details_id));
                 params.put("get_payment_info", "1");
                 return params;
             }

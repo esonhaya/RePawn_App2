@@ -123,7 +123,7 @@ public class All_Items_Adapter extends RecyclerView.Adapter<All_Items_ViewHolder
                     }
                 }
             }
-            if (max > min) {
+            if (max > min &&min!=0) {
                 for (ItemList wp : arraylist) {
                     if (wp.getPrice() <= max && wp.getPrice() >= min) {
                         mDataset.add(wp);

@@ -114,8 +114,9 @@ public class Orders extends AppCompatActivity {
                     for (int i = 0; i < item_array.length(); i++) {
                         JSONObject item = item_array.getJSONObject(i);
                         Order_List list = new Order_List(item.getInt("Order_Product_ID"),item.getString("product_image"), item.getString("Product_ID"),
-                                item.getLong("Product_price"), item.getString("request_type"), item.getString("Product_name")
-                                , item.getString("Date_Sent"), item.getString("Product_Type"),item.getString("Status"));
+                                item.getLong("Product_price"), item.getString("request_type"),
+                                item.getString("Product_name"), item.getString("Date_Sent"),
+                                item.getString("Product_Type"),item.getString("Status"),item.getInt("cancelled"),item.getString("Date_End"));
                         order_list.add(list);
                     }
                     oa.notifyDataSetChanged();
@@ -150,7 +151,7 @@ public class Orders extends AppCompatActivity {
                         JSONObject item = item_array.getJSONObject(i);
                         Order_List list = new Order_List(item.getInt("Reservation_Product_ID"),item.getString("product_image"), item.getString("Product_ID"),
                                 item.getLong("Product_price"), item.getString("request_type"), item.getString("Product_name")
-                                , item.getString("Date_Sent"), item.getString("Product_Type"),item.getString("Status"));
+                                , item.getString("Date_Sent"), item.getString("Product_Type"),item.getString("Status"),item.getInt("cancelled"),item.getString("Date_End"));
                         reserve_list.add(list);
                     }
                     ra.notifyDataSetChanged();

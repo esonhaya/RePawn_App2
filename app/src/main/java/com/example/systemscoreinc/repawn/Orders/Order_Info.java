@@ -57,7 +57,7 @@ public class Order_Info extends AppCompatActivity {
     TextView date_accepted, buyer_name, payment_type, reservation_start_date, reservation_end_date, date_order_ended,
             paypal_id, pay_amount, Date_paid;
     TextView product_name, item_price, item_desc, item_category, seller_name, pending_message, date_sent,
-            reservation_sent, reservation_payment;
+            reservation_sent, reservation_payment, waiting_confirmation;
     LinearLayout order_layout, payment_layout, order_info_layout, reserve_info_layout, receipt_layout;
     Context context;
     Session session;
@@ -472,8 +472,9 @@ public class Order_Info extends AppCompatActivity {
                         if (seller_confirm == 1 && buyer_confirmation == 0) {
                             buyer_confirm.setVisibility(View.VISIBLE);
                         }
-                        if (seller_confirm == 1 && buyer_confirmation == 1) {
-
+                        if (seller_confirm == 0) {
+                            pending_message.setText("Awaiting payment confirmation");
+                            pending_message.setVisibility(View.VISIBLE);
                         }
                     }
                     pay_pal.setVisibility(View.GONE);
@@ -551,6 +552,8 @@ public class Order_Info extends AppCompatActivity {
                             }
                             cancel_request.setVisibility(View.VISIBLE);
                         }
+
+
                     }
                     reserve_info_layout.setVisibility(View.VISIBLE);
                 } else {
@@ -691,9 +694,19 @@ public class Order_Info extends AppCompatActivity {
                                     buyer_confirm.setVisibility(View.VISIBLE);
                                 }
                             }
+                            if (stat.equals("pending")) {
+                                cancel_request.setVisibility(View.VISIBLE);
+                            }
                         }
 
+
                         payment_type.append(spayment_type);
+                        if (seller_confirm == 1 && buyer_confirmation == 1) {
+                            pending_message.setText("Order successful");
+                            pending_message.setTextColor(getResources().getColor(R.color.colorPrimary));
+                            pending_message.setVisibility(View.VISIBLE);
+                        }
+
                     }
                     order_layout.setVisibility(View.VISIBLE);
                 } else {

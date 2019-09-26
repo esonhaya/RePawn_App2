@@ -53,7 +53,7 @@ public class Order_History_Adapter extends RecyclerView.Adapter<Order_History_Vi
         holder.orderer_name.append(list.getBuyer_name());
         holder.date_sent.append(convert_date(list.getDate_sent()));
         holder.date_accepted.append(convert_date(list.getDate_accepted()));
-        if (!list.getDate_end().equals("not yet")) {
+        if (!list.getDate_end().equals("not yet")&&!list.getDate_end().equals("cancelled")) {
             holder.date_ended.append(convert_date(list.getDate_end()));
         }
         holder.date_ended.append(list.getDate_end());

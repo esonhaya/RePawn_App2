@@ -119,6 +119,7 @@
                 />
                 <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
                               android:orientation="vertical"
+                              android:id="@+id/receipt_layout"
                 >
                     <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
                               android:padding="5dp"
@@ -129,9 +130,9 @@
                     <ImageView
                             android:layout_width="match_parent"
                             android:layout_height="200dp"
+                            android:id="@+id/product_receipt"
                             android:adjustViewBounds="true"
-                            android:scaleType="fitXY" app:srcCompat="@drawable/pawnshop_background"
-                            android:id="@+id/product_receipt"/>
+                            android:scaleType="fitXY" app:srcCompat="@drawable/pawnshop_background"/>
                 </LinearLayout>
             </LinearLayout>
             <Button android:id="@+id/btn_order" android:layout_width="match_parent" android:layout_height="wrap_content"

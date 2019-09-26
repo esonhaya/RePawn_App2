@@ -227,10 +227,10 @@ public class Pawnshop_Page extends AppCompatActivity {
                         ItemList item = new ItemList(items_object.getString("Product_name"),
                                 items_object.getString("Date_Added"), items_object.getString("seller_name")
                                 , items_object.getString("Category_name"), items_object.getString("Product_Type"),
-                                items_object.getString("Product_image"), items_object.getString("Product_description")
+                                items_object.getString("product_image"), items_object.getString("Product_description")
                                 , items_object.getInt("Promoted"), items_object.getInt("Reserved"), items_object.getInt("Ordered"), items_object.getInt("Product_ID"),
-                                user_id, items_object.getInt("Reservable"),
-                                items_object.getLong("Product_price"));
+                                user_id, items_object.getInt("reservable"),
+                                items_object.getLong("Product_price"),items_object.getInt("active"));
                         if (i > 5) {
                             see_all_products.setVisibility(View.VISIBLE);
                         }

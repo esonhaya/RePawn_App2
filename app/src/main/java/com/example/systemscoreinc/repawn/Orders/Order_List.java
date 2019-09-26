@@ -3,17 +3,26 @@ package com.example.systemscoreinc.repawn.Orders;
 import java.io.Serializable;
 
 public class Order_List implements Serializable {
-    int order_id;
+    int order_id, cancelled;
     Long product_price;
+
     public int getOrder_id() {
         return order_id;
     }
 
     String image_url, payment_type, seller_name, seller_id, product_id, request_type, status,
-            product_name, date_sent, product_type;
+            product_name, date_sent, product_type, date_end;
+
+    public int getCancelled() {
+        return cancelled;
+    }
+
+    public String getDate_end() {
+        return date_end;
+    }
 
     public Order_List(int order_id, String image_url, String product_id, long product_price, String request_type,
-                      String product_name, String date_sent, String product_type, String status) {
+                      String product_name, String date_sent, String product_type, String status, int cancelled, String date_end) {
         this.order_id = order_id;
         this.image_url = image_url;
         this.product_id = product_id;
@@ -23,6 +32,8 @@ public class Order_List implements Serializable {
         this.date_sent = date_sent;
         this.product_type = product_type;
         this.status = status;
+        this.cancelled = cancelled;
+        this.date_end = date_end;
     }
 
     public String getDate_sent() {

@@ -102,7 +102,7 @@ public class Home_Navigation1 extends AppCompatActivity implements BaseSliderVie
     RequestQueue rq;
     Bitmap largeIcon;
     PendingIntent pendingIntent;
-     Intent to_page;
+    Intent to_page;
     TextView notifView;
     int notif_id = 1;
     public static final String NOTIFICATION_CHANNEL_ID = "channel_id";
@@ -329,7 +329,7 @@ public class Home_Navigation1 extends AppCompatActivity implements BaseSliderVie
                 to_page = new Intent(context, RePawner_Profile.class);
                 to_page.putExtra("user_id", session.getID());
             }
-          pendingIntent = PendingIntent.getActivity(this, 0, to_page, 0);
+            pendingIntent = PendingIntent.getActivity(this, 0, to_page, 0);
             NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), "M_CH_ID");
             builder.setSmallIcon(R.mipmap.rp_launcher_round)
                     .setContentTitle("RePawn")
@@ -455,7 +455,7 @@ public class Home_Navigation1 extends AppCompatActivity implements BaseSliderVie
                                 items_object.getString("product_image"), items_object.getString("Product_description")
                                 , items_object.getInt("Promoted"), items_object.getInt("Reserved"), items_object.getInt("Ordered"), items_object.getInt("Product_ID"),
                                 items_object.getInt("User_ID"), items_object.getInt("reservable"),
-                                items_object.getLong("Product_price"));
+                                items_object.getLong("Product_price"), items_object.getInt("active"));
                         item_list.add(item);
                     }
                     items_adapter.notifyDataSetChanged();

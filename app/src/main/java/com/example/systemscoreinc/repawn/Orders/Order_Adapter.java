@@ -71,7 +71,17 @@ public class Order_Adapter extends RecyclerView.Adapter<Order_ViewHolder> {
         SimpleDateFormat convetDateFormat = new SimpleDateFormat("MM/dd/yyyy ");
         String sdate = convetDateFormat.format(date);
         holder.date_sent.setText(sdate);
-        holder.request_status.setText(item.getStatus());
+        if (item.getCancelled() == 1) {
+            holder.request_status.setText("cancelled");
+            holder.request_status.setTextColor(ContextCompat.getColor(Ctx, R.color.colorError));
+        }
+        if (!item.getDate_end().isEmpty() && rtype.equals("order")) {
+            holder.request_status.setText("Successful");
+            holder.request_status.setTextColor(ContextCompat.getColor(Ctx, R.color.colorPrimaryDark));
+        }
+        if (item.getDate_end().isEmpty()&&item.getCancelled()==0) {
+            holder.request_status.setText(item.getStatus());
+        }
         holder.linearLayout.setOnClickListener(view -> {
             Intent pinfo = new Intent(Ctx, Order_Info.class);
             pinfo.putExtra("product_id", item.getProduct_id());
