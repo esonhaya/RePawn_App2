@@ -562,13 +562,15 @@ public class MyPawnedInfo extends AppCompatActivity {
                                 , info.getString("Payment_Type"), info.getString("Date_End"),
                                 info.getString("Date_Accepted"), info.getString("buyer_name"));
                         ohl.add(list);
-                            seller_confirmed = info.getInt("Seller_confirmation");
-                            buyer_confirmed = info.getInt("Buyer_confirmation");
+                        seller_confirmed = info.getInt("Seller_confirmation");
+                        buyer_confirmed = info.getInt("Buyer_confirmation");
                         if (info.getInt("active") == 1) {
+                            spayment_type = info.getString("Payment_Type");
+                            order_details_id = info.getInt("Order_Details_ID");
                             ohl_current.add(list);
                             Visibility_All();
                         }
-                        if (active==0 && seller_confirmed == 1 && buyer_confirmed == 1) {
+                        if (active == 0 && seller_confirmed == 1 && buyer_confirmed == 1) {
                             spayment_type = info.getString("Payment_Type");
                             order_details_id = info.getInt("Order_Details_ID");
                             nop.setText("Ownership transferred succesfully");
@@ -669,7 +671,7 @@ public class MyPawnedInfo extends AppCompatActivity {
                         paypal_id.append(info.getString("Paypal_Payment_ID"));
                         pay_amount.append(info.getString("Amount"));
                         Date_paid.append(info.getString("Date_Paid"));
-                        if (seller_confirmed != 1&&active==1) {
+                        if (seller_confirmed != 1 && active == 1) {
                             seller_confirm.setVisibility(View.VISIBLE);
                         }
                     }

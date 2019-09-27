@@ -99,6 +99,9 @@ public class All_Items_Adapter extends RecyclerView.Adapter<All_Items_ViewHolder
                 if (wp.getCat_name().toLowerCase(Locale.getDefault()).contains(charText)) {
                     mDataset.add(wp);
                 }
+                if (wp.getSeller_name().toLowerCase(Locale.getDefault()).contains(charText)) {
+                    mDataset.add(wp);
+                }
             }
         }
         notifyDataSetChanged();
@@ -123,14 +126,14 @@ public class All_Items_Adapter extends RecyclerView.Adapter<All_Items_ViewHolder
                     }
                 }
             }
-            if (max > min &&min!=0) {
+            if (max > min && min != 0) {
                 for (ItemList wp : arraylist) {
                     if (wp.getPrice() <= max && wp.getPrice() >= min) {
                         mDataset.add(wp);
                     }
                 }
             }
-            if (min > max) {
+            if (min > max && max != 0) {
                 MDToast.makeText(Ctx, "Please check both prices", MDToast.LENGTH_LONG, MDToast.TYPE_ERROR).show();
             }
         }

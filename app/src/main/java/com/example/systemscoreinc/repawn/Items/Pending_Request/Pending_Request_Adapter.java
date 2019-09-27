@@ -101,7 +101,7 @@ public class Pending_Request_Adapter extends RecyclerView.Adapter<Pending_Reques
             AlertDialog onconf = new AlertDialog.Builder(Ctx, R.style.RePawnDialog)
                     .setTitle("Accept this Request")
                     .setPositiveButton("Accept", (dialog, which) -> request_decision(1, list.getRequest_type()))
-                    .setNegativeButton("Decline", (dialog, which) -> request_decision(0, list.getRequest_type()))
+                    .setNegativeButton("Decline", (dialog, which) -> request_decision(2, list.getRequest_type()))
                     .setNeutralButton("Decide later",((dialog,which) -> {}))
                     .create();
             onconf.show();

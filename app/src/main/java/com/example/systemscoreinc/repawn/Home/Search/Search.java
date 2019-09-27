@@ -67,13 +67,11 @@ public class Search extends AppCompatActivity implements SearchView.OnQueryTextL
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
         i = getIntent();
-
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         viewPager = findViewById(R.id.viewpager);
         setupViewPager(viewPager);
-
         getSupportActionBar().setTitle("Search");
         tabLayout = findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);

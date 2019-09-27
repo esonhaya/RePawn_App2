@@ -67,7 +67,7 @@ public class RePawner_Profile extends AppCompatActivity {
     Bundle extra;
     Session session;
     Context context;
-    int user_id, rating, update_feedback=0;
+    int user_id, rating, update_feedback = 0;
     String if_follow;
     RequestQueue rq;
     Home_Items_Adapter items_adapter;
@@ -278,7 +278,7 @@ public class RePawner_Profile extends AppCompatActivity {
                                 items_object.getString("product_image"), items_object.getString("Product_description")
                                 , items_object.getInt("Promoted"), items_object.getInt("Reserved"), items_object.getInt("Ordered"), items_object.getInt("Product_ID"),
                                 session.getID(), items_object.getInt("reservable"),
-                                items_object.getLong("Product_price"),items_object.getInt("active"));
+                                items_object.getLong("Product_price"), items_object.getInt("active"));
                         if (i > 5) {
                             see_all_products.setVisibility(View.VISIBLE);
                         }
@@ -651,6 +651,8 @@ public class RePawner_Profile extends AppCompatActivity {
         btn_delete.setOnClickListener(repawner_click);
         btn_follow = this.findViewById(R.id.btn_follow);
         btn_unfollow = this.findViewById(R.id.btn_unfollow);
+        btn_follow.setOnClickListener(repawner_click);
+        btn_unfollow.setOnClickListener(repawner_click);
 
         if_invisible();
 

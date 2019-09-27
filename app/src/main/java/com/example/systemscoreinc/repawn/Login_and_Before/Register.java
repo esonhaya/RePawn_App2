@@ -23,6 +23,8 @@ import com.example.systemscoreinc.repawn.Session;
 import com.example.systemscoreinc.repawn.Utils;
 import com.github.tntkhang.gmailsenderlibrary.GMailSender;
 import com.github.tntkhang.gmailsenderlibrary.GmailListener;
+import com.squareup.picasso.MemoryPolicy;
+import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 import com.valdesekamdem.library.mdtoast.MDToast;
 
@@ -57,8 +59,6 @@ public class Register extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
-
-        //    String url="192.168.8.100/RePawn/add_user.php";
         get_this();
         sign_up.setOnClickListener(v -> {
             check_errors();
@@ -69,7 +69,6 @@ public class Register extends AppCompatActivity {
 
         TextView tagr = this.findViewById(R.id.terms_agreement);
         tagr.setOnClickListener(v -> {
-            //navigateTo(new TermsConditions(), true);
             Intent to_tac = new Intent(Register.this, TermsConditions.class);
             startActivity(to_tac);
         });
@@ -280,22 +279,22 @@ public class Register extends AppCompatActivity {
         profile_image.setOnClickListener(register_click);
         Picasso.get()
                 .load(ip.getUrl_image() + "default.jpg")
+                .memoryPolicy(MemoryPolicy.NO_CACHE)
+                .networkPolicy(NetworkPolicy.NO_CACHE)
+                .fit()
                 .fit()
                 .into(profile_image);
 
     }
 
-    private View.OnClickListener register_click = new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-            switch (view.getId()) {
-                case R.id.profile_image:
-                    Intent intent = new Intent();
-                    intent.setType("image/*");
-                    intent.setAction(Intent.ACTION_GET_CONTENT);
-                    startActivityForResult(Intent.createChooser(intent, "Complete action using"), IMAGE_REQUEST_CODE);
-                    break;
-            }
+    private View.OnClickListener register_click = view -> {
+        switch (view.getId()) {
+            case R.id.profile_image:
+                Intent intent = new Intent();
+                intent.setType("image/*");
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+                startActivityForResult(Intent.createChooser(intent, "Complete action using"), IMAGE_REQUEST_CODE);
+                break;
         }
     };
 

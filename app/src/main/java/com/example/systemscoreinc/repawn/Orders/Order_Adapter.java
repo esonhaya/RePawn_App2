@@ -59,7 +59,7 @@ public class Order_Adapter extends RecyclerView.Adapter<Order_ViewHolder> {
         } else {
             holder.item_ribbon.setBackgroundColor(Color.BLUE);
         }
-        holder.request_price.setText("₱ " + String.format("%.2f", Double.valueOf(item.getProduct_price())));
+        holder.request_price.setText("₱ "  + String.format("%.2f", Double.valueOf(item.getProduct_price())));
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 
         Date date = null;
@@ -79,8 +79,11 @@ public class Order_Adapter extends RecyclerView.Adapter<Order_ViewHolder> {
             holder.request_status.setText("Successful");
             holder.request_status.setTextColor(ContextCompat.getColor(Ctx, R.color.colorPrimaryDark));
         }
-        if (item.getDate_end().isEmpty()&&item.getCancelled()==0) {
+        if (item.getDate_end().isEmpty() && item.getCancelled() == 0) {
             holder.request_status.setText(item.getStatus());
+        }
+        if (item.getStatus().equals("declined")) {
+            holder.request_status.setTextColor(ContextCompat.getColor(Ctx, R.color.colorError));
         }
         holder.linearLayout.setOnClickListener(view -> {
             Intent pinfo = new Intent(Ctx, Order_Info.class);
@@ -90,6 +93,7 @@ public class Order_Adapter extends RecyclerView.Adapter<Order_ViewHolder> {
             pinfo.putExtra("request_status", item.getStatus());
             pinfo.putExtra("payment_type", item.getPayment_type());
             pinfo.putExtra("type", item.getProduct_type());
+            pinfo.putExtra("cancelled", item.getCancelled());
             Ctx.startActivity(pinfo);
 
         });

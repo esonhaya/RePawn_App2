@@ -104,6 +104,8 @@ public class Order_Info extends AppCompatActivity {
         //  Log.e("seller", String.valueOf(seller_id));
         type = extra.getString("type");
         req_id = extra.getInt("request_id");
+        cancelled = extra.getInt("cancelled");
+        Log.e("cancelled", String.valueOf(cancelled));
         Intent intent = new Intent(this, PayPalService.class);
 
         intent.putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION, config);
@@ -148,7 +150,9 @@ public class Order_Info extends AppCompatActivity {
         }
         if (request_status.equals("pending")) {
             pending_message.setVisibility(View.VISIBLE);
-            change_payment.setVisibility(View.VISIBLE);
+            if (cancelled == 0) {
+                change_payment.setVisibility(View.VISIBLE);
+            }
             get_order_details();
             get_reserve_details();
         } else if (request_status.equals("accepted")) {
@@ -158,7 +162,7 @@ public class Order_Info extends AppCompatActivity {
             } else {
                 get_reserve_details();
             }
-        } else {
+        } else if (request_status.equals("declined")) {
             pending_message.setText("Declined Request");
             pending_message.setVisibility(View.VISIBLE);
         }
@@ -532,10 +536,10 @@ public class Order_Info extends AppCompatActivity {
                         }
                         if (info.getString("Date_End").isEmpty()) {
 
-                            date_order_ended.append("not yet");
+                            reservation_end_date.append("not yet");
                         } else {
                             da = info.getString("Date_End");
-                            date_order_ended.append(date_formatter(da));
+                            reservation_end_date.append(da);
                         }
                         String stat = info.getString("Status");
                         spayment_type = info.getString("Payment_Type");
@@ -546,6 +550,7 @@ public class Order_Info extends AppCompatActivity {
                         if (cancelled == 1) {
                             pending_message.setText("Cancelled");
                             pending_message.setVisibility(View.VISIBLE);
+                            change_payment.setVisibility(View.GONE);
                         } else {
                             if (stat.equals("accepted")) {
                                 order_now.setVisibility(View.VISIBLE);

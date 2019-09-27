@@ -140,6 +140,11 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    public void onBackPressed() {
+        // Do Here what ever you want do on back press;
+    }
+
     public void check_active() {
         StringRequest request2 = new StringRequest(Request.Method.POST, url, response -> {
             if (!response.equals("0")) {

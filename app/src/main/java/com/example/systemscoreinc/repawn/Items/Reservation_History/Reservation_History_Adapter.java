@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import com.example.systemscoreinc.repawn.IpConfig;
 import com.example.systemscoreinc.repawn.Profile_Related.RePawner_Profile;
 import com.example.systemscoreinc.repawn.R;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -38,7 +39,7 @@ public class Reservation_History_Adapter extends RecyclerView.Adapter<Reservatio
     @NonNull
     @Override
     public Reservation_History_ViewHolder onCreateViewHolder(ViewGroup parent,
-                                                       int viewType) {
+                                                             int viewType) {
         // create a new view
         View layoutView = LayoutInflater.from(Ctx).inflate(R.layout.reserve_card, parent, false);
         return new Reservation_History_ViewHolder(layoutView);
@@ -49,14 +50,15 @@ public class Reservation_History_Adapter extends RecyclerView.Adapter<Reservatio
     public void onBindViewHolder(@NonNull Reservation_History_ViewHolder holder, final int position) {
         final Reservation_History_List list = mDataset.get(position);
         holder.orderer_name.append(list.getBuyer_name());
-        holder.date_sent.append(convert_date(list.getDate_Started()));
-        holder.date_accepted.append(convert_date(list.getDate_Accepted()));
-        holder.date_ended.append(convert_date(list.getDate_End()));
+        holder.date_sent.append(list.getDate_Started());
+        holder.date_accepted.append(list.getDate_Accepted());
+        holder.date_ended.append(list.getDate_End());
+        holder.payment_type.append(list.getPayment_type());
         holder.orderer_name.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent to_prof=new Intent(Ctx, RePawner_Profile.class);
-                to_prof.putExtra("user_id",list.getBuyer_id());
+                Intent to_prof = new Intent(Ctx, RePawner_Profile.class);
+                to_prof.putExtra("user_id", list.getBuyer_id());
             }
         });
     }

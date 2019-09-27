@@ -8,6 +8,6 @@ public class IpConfig {
     public String getUrl_image() {
         return url_image;
     }
-    private String url="http://192.168.1.2/newRP/mobile/";
-    private String url_image="http://192.168.1.2/newRP/mvc/view/palawan/";
+    private String url="http://192.168.1.8/newRP/mobile/";
+    private String url_image="http://192.168.1.8/newRP/mvc/view/palawan/";
 }
